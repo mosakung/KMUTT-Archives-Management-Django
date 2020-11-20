@@ -1,3 +1,4 @@
 {
-    "python.pythonPath": "C:\\Users\\BearSouL\\.virtualenvs\\django-haddle-token-nlp-_Ko0kZ5M\\Scripts\\python.exe"
+    "python.pythonPath": "C:\\Users\\BearSouL\\.virtualenvs\\django-haddle-token-nlp-_Ko0kZ5M\\Scripts\\python.exe",
+    "editor.formatOnSave": true
 }

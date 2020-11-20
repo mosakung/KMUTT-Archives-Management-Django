@@ -38,6 +38,13 @@ from service_nlp.serializers import Term_wordSerializer
 # django_log
 from service_nlp.models import Django_log
 from service_nlp.serializers import Django_logSerializer
+# Page_in_document
+from service_nlp.models import Page_in_document
+from service_nlp.serializers import Page_in_documentSerializer
+# Pre_term_in_page
+from service_nlp.models import Pre_term_in_page
+from service_nlp.serializers import Pre_term_in_pageSerializer
+
 
 def insertIndexing_contributor_document(body):
     if body.get('DC_contributor') == None:
@@ -218,6 +225,7 @@ def alreadyDocumnet(name):
 
 def insertDocument(body):
     row = Document(
+        status_process_document=0,
         name=body.get('name'),
         version=body.get('version'),
         path=body.get('path'),
@@ -319,6 +327,7 @@ def getUniqueTerm():
     result = serializers.data
     return result
 
+
 def select_term_word(term):
     try:
         row = Term_word.objects.get(
@@ -342,6 +351,7 @@ def insertTerm_word(term):
     serializers = Term_wordSerializer(row)
     result = serializers.data
     return result
+
 
 def updateFrequency_Term_word(term):
     try:
@@ -415,6 +425,7 @@ def update_score_TFIDF_mono(doc_index):
     result = serializers.data
     return result
 
+
 def update_score_TFIDF_all():
     rows = Score.objects.filter(
         ~Q(generate_by="init-user")
@@ -454,7 +465,9 @@ def query_by_term(term_word_input):
         term=term_word_input
     )
 
+
 ''' add score TF-IDF by user table '''
+
 
 def insert_score_tag_user(term_index, doc_index):
     row = Score(
@@ -468,6 +481,7 @@ def insert_score_tag_user(term_index, doc_index):
     serializers = ScoreSerializer(row)
     result = serializers.data
     return result
+
 
 def update_score_tag_user(term_index, doc_index):
     try:
@@ -486,6 +500,7 @@ def update_score_tag_user(term_index, doc_index):
     except Score.MultipleObjectsReturned:
         return False
 
+
 def insert_error_create_doc(logDetails):
     row = Django_log(
         rec_status=logDetails['status'],
@@ -497,3 +512,60 @@ def insert_error_create_doc(logDetails):
     result = serializers.data
     return result
 
+
+def insert_page(index, name, document_id):
+    row = Page_in_document(
+        page_index=index,
+        name=name,
+        index_document_id=document_id,
+        rec_status_confirm=0
+    )
+    row.save()
+    serializers = Page_in_documentSerializer(row)
+    result = serializers.data
+    return result
+
+
+def insert_pre_term_in_page(term, page_id):
+    row = Pre_term_in_page(
+        pre_term=term,
+        index_page_in_document_id=page_id
+    )
+    row.save()
+    serializers = Pre_term_in_pageSerializer(row)
+    result = serializers.data
+    return result
+
+
+def update_status_document(document_id, status):
+    try:
+        row = Document.objects.get(
+            document_id=document_id,
+        )
+        row.status_process_document = status
+        row.save()
+        serializers = DocumentSerializer(row)
+        result = serializers.data
+        return result
+    except Document.DoesNotExist:
+        return False
+    except Document.MultipleObjectsReturned:
+        return False
+
+
+def query_page_in_document_id(document_id):
+    rows = Page_in_document.objects.filter(
+        index_document_id=document_id
+    )
+    serializers = Page_in_documentSerializer(rows, many=True)
+    result = serializers.data
+    return result
+
+
+def query_term_in_page(page_docId):
+    rows = Pre_term_in_page.objects.filter(
+        index_page_in_document_id=page_docId
+    )
+    serializers = Pre_term_in_pageSerializer(rows, many=True)
+    result = serializers.data
+    return result

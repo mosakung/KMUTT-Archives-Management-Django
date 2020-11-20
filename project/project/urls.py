@@ -23,4 +23,5 @@ urlpatterns = [
     path('update-IDF/', views.request_update_IDF),
     path('update-TF-IDF/', views.request_update_TF_IDF),
     path('test/', views.request_test),
+    path('start-TF/', views.request_start_TF),
 ]

@@ -12,6 +12,9 @@ from service_nlp.models import Indexing_issued_date_document
 from service_nlp.models import Score
 from service_nlp.models import Term_word
 from service_nlp.models import Django_log
+from service_nlp.models import Page_in_document
+from service_nlp.models import Pre_term_in_page
+from service_nlp.models import User
 
 
 class DynamicFieldsModelSerializer(serializers.ModelSerializer):
@@ -72,6 +75,7 @@ class DocumentSerializer(DynamicFieldsModelSerializer):
     class Meta:
         model = Document
         fields = ('document_id',
+                  'status_process_document',
                   'name',
                   'version',
                   'path',
@@ -197,3 +201,34 @@ class Django_logSerializer(DynamicFieldsModelSerializer):
                   'rec_create_date',
                   'log_error',
                   'index_document')
+
+
+class Page_in_documentSerializer(DynamicFieldsModelSerializer):
+    class Meta:
+        model = Page_in_document
+        fields = ('page_in_document_id',
+                  'page_index',
+                  'name',
+                  'rec_status_confirm',
+                  'index_document_id')
+
+
+class Pre_term_in_pageSerializer(DynamicFieldsModelSerializer):
+    class Meta:
+        model = Pre_term_in_page
+        fields = ('pre_term_in_page_id',
+                  'pre_term',
+                  'index_page_in_document_id')
+
+
+class UserSerializer(DynamicFieldsModelSerializer):
+    class Meta:
+        model = User
+        fields = ('user_id',
+                  'name',
+                  'surname',
+                  'role',
+                  'username',
+                  'password',
+                  'create_at',
+                  'active')

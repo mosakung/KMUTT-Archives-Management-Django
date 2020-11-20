@@ -15,8 +15,8 @@ def spellCheckEnTh(word):
         result = correct(word)
     else:
         result = spell.correction(word)
-    if(result != word):
-        print("SPEEL CHECK DETECT <MODULE> >> " + word + " => " + result)
+    # if(result != word):
+    #     print("SPEEL CHECK DETECT <MODULE> >> " + word + " => " + result)
     return result
 
 
@@ -47,7 +47,7 @@ def spellcheck_specific_term(word, corpus):
     for row in corpus:
         med = minimun_edit_distance(word, row['term'])
         if(med <= int(row['threshold'])):
-            print("SPEEL CHECK DETECT <MY> >> " + word + " => " + row['term'])
+            # print("SPEEL CHECK DETECT <MY> >> " + word + " => " + row['term'])
             return row['term']
 
     return word

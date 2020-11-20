@@ -19,7 +19,7 @@ from service_nlp.Request.request import send_ping
 
 # GLOBAL parameter
 GLOBAL_POOL = cf.ThreadPoolExecutor(max_workers=1)
-
+FAST_POOL = cf.ThreadPoolExecutor(max_workers=1)
 # Create your views here.
 
 
@@ -36,39 +36,69 @@ def request_test(request):
 
 
 @csrf_exempt
-def request_add_document(request):
+def request_start_TF(request):
     if request.method == 'POST':
         data = JSONParser().parse(request)
-        ask_status, ask_message = sdb.askCreateDocument(data['document'])
 
-        def main(input_data):
-            print("START : ", request)
-            documentJSON = input_data['document']
+        def main(data):
+            documentId = data['documentId']
+            result = sdb.query_term_for_TF(documentId)
+            tf = ss.calculateTf(result)
             try:
-                document_detail = sdb.addDocumnet(documentJSON)
-            except:
-                print("Unexpected error:", sys.exc_info()[0])
-            tf = ss.initTF(documentJSON['path'])
-            try:
-                index_document = document_detail.get(
-                    'result_row_document'
-                ).get(
-                    'document_id'
-                )
                 new_term = sdb.what_new_term(tf)
-                result_update_TF, dict_log_frequency= sdb.updateTermTF(
-                    tf, index_document)
+                result_update_TF, dict_log_frequency = sdb.updateTermTF(
+                    tf, documentId)
                 sdb.update_term_idf_score(new_term)
-                sdb.update_document_tfidf_score(index_document)
+                sdb.update_document_tfidf_score(documentId)
                 error_log = ss.error_validate_frequency(dict_log_frequency)
-                if error_log:
-                    result = sdb.insert_django_log(error_log, index_document, 404)
-                else:
-                    sdb.insert_django_log(None, index_document, 200)
 
+                if error_log:
+                    result = sdb.insert_django_log(
+                        error_log, documentId, 404)
+                else:
+                    sdb.insert_django_log(None, documentId, 200)
+                    sdb.task_initialize_TF_IDF_done(documentId)
                 print('error_log :', error_log)
             except:
                 print("Unexpected error:", sys.exc_info()[0])
+
+        ''' Thread run '''
+        FAST_POOL.submit(main, data)
+
+        return JsonResponse({
+            'message': True,
+        })
+
+
+@csrf_exempt
+def request_add_document(request):
+    if request.method == 'POST':
+        ''' request parser '''
+        data = JSONParser().parse(request)
+        input_document = data['document']
+
+        ''' already document & paramter force ? '''
+        ask_status, ask_message = sdb.askCreateDocument(input_document)
+
+        ''' main '''
+        def main(input):
+            ''' define input param '''
+            main_input_document = data['document']
+            main_input_user = data['user']
+            path_directory = main_input_document['path']
+
+            ''' add document '''
+            document_detail = sdb.addDocumnet(main_input_document)
+            index_document = document_detail.get(
+                'result_row_document'
+            ).get(
+                'document_id'
+            )
+
+            ''' initialize PRE keyword '''
+            ss.initialize_PRE_keyword(path_directory, index_document)
+            sdb.task_initialize_PRE_keyword_done(index_document)
+            print('END PROCESS ADD DOCUMENT <', index_document, '>')
 
         ''' Thread run '''
         if ask_status:

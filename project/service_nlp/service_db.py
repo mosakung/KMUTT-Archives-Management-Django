@@ -151,3 +151,33 @@ def insert_django_log(log, index_document, status):
     }
     row = db.insert_error_create_doc(logDetails)
     return row
+
+
+def manage_pre_keyword(page_body, document_id, keywords):
+    name = page_body['name']
+    index = page_body['page_index']
+
+    row_page = db.insert_page(index, name, document_id)
+    page_id = row_page.get('page_in_document_id')
+
+    for keyword in keywords:
+        row_pre_term = db.insert_pre_term_in_page(keyword, page_id)
+
+
+def task_initialize_PRE_keyword_done(document_id):
+    return db.update_status_document(document_id, 1)
+
+
+def task_initialize_TF_IDF_done(document_id):
+    return db.update_status_document(document_id, 2)
+
+
+def query_term_for_TF(document_id):
+    arrayPages = db.query_page_in_document_id(document_id)
+    arrayTerms = list(map(lambda x: db.query_term_in_page(
+        x['page_in_document_id']), arrayPages))
+    result = []
+    for arrayTerm in arrayTerms:
+        array = list(map(lambda x: x['pre_term'], arrayTerm))
+        result.extend(array)
+    return result

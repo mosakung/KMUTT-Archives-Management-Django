@@ -40,6 +40,7 @@ class Dc_type(models.Model):
 
 class Document(models.Model):
     document_id = models.AutoField(primary_key=True)
+    status_process_document = models.IntegerField()
     name = models.CharField(max_length=191)
     version = models.IntegerField()
     path = models.TextField()
@@ -63,9 +64,9 @@ class Document(models.Model):
     thesis_degree_discipline = models.CharField(max_length=191)
     thesis_degree_grantor = models.CharField(max_length=191)
     rec_create_at = models.DateTimeField(auto_now=True)
-    rec_create_by = models.CharField(max_length=191)
+    rec_create_by = models.IntegerField(db_index=True)
     rec_modified_at = models.DateTimeField(auto_now=True)
-    rec_modified_by = models.CharField(max_length=191)
+    rec_modified_by = models.IntegerField(db_index=True)
     index_creator = models.IntegerField(db_index=True)
     index_creator_orgname = models.IntegerField(db_index=True)
     index_publisher = models.IntegerField(db_index=True)
@@ -173,3 +174,36 @@ class Django_log(models.Model):
 
     class Meta:
         db_table = "django_log"
+
+
+class Page_in_document(models.Model):
+    page_in_document_id = models.AutoField(primary_key=True)
+    page_index = models.IntegerField()
+    name = models.CharField(max_length=191)
+    rec_status_confirm = models.IntegerField()
+    index_document_id = models.IntegerField(db_index=True)
+
+    class Meta:
+        db_table = "page_in_document"
+
+
+class Pre_term_in_page(models.Model):
+    pre_term_in_page_id = models.AutoField(primary_key=True)
+    pre_term = models.CharField(max_length=191)
+    index_page_in_document_id = models.IntegerField(db_index=True)
+
+    class Meta:
+        db_table = "pre_term_in_page"
+
+
+class User(models.Model):
+    user_id = models.AutoField(primary_key=True)
+    name = models.CharField(max_length=191)
+    surname = models.CharField(max_length=191)
+    role = models.CharField(max_length=191)
+    username = models.CharField(max_length=191)
+    password = models.CharField(max_length=191)
+    active = models.IntegerField()
+
+    class Meta:
+        db_table = "user"

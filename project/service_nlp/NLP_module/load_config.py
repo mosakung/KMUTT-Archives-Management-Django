@@ -1,8 +1,9 @@
 import re as regex
 
+
 def load_specific():
     def readfile():
-        path = "./service_nlp/NLP_module/config/term_specific.txt"
+        path = "./service_nlp/NLP_module/config/term_specific"
         with open(path, "r", encoding="utf8") as f:
             return f.read().splitlines()
 

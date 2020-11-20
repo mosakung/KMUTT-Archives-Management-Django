@@ -1,4 +1,5 @@
 from threading import Thread
+import re
 from service_nlp.NLP_module import read_document
 from service_nlp.NLP_module import cut_word
 from service_nlp.NLP_module import clean_token
@@ -12,64 +13,69 @@ from service_nlp.NLP_module import clean_stop_word
 from service_nlp.NLP_module import normalize
 import concurrent.futures as cf
 from itertools import repeat
+from service_nlp import service_db as sdb
 
 
-def initTF(directoryName):
-    list_word_extend = []
-
+def initialize_PRE_keyword(directoryName, doc_id):
+    ''' defind GOLBAL '''
+    page_set = []
     ''' Read document with (read directory) '''
     pathRead = './document' + directoryName
     documents = read_document.readDirectory(pathRead)
 
-    def childTokenizer(value, key):
-        paramCut = []
-        print(key + '-> start')
-        for x in value:
+    def main(key, value_arr):
+        raw_keyword = []
+        ''' loop line in document '''
+        for value in value_arr:
             ''' deepcut '''
-            precut = cut_word.cut(x)
+            process = cut_word.cut(value)
 
             ''' clean token '''
-            precut_filter_space = list(
-                map(clean_token.delete_space_regex, precut))
-            precut_filter_space_unnecessary_words = clean_token.delete_unnecessary_words(
-                precut_filter_space)
+            process = list(map(clean_token.delete_space_regex, process))
+            process = clean_token.delete_unnecessary_words(process)
 
-            ''' extend to array (THREAD) result '''
-            paramCut.extend(precut_filter_space_unnecessary_words)
+            ''' extend to raw_keyword '''
+            raw_keyword.extend(process)
 
         ''' pyspellcheck '''
-        paramCut = list(map(spell_check.spellCheckEnTh, paramCut))
+        # raw_keyword = list(map(spell_check.spellCheckEnTh, raw_keyword))
 
         """ Normalize """
-        paramCut = list(map(normalize.clean_dot, paramCut))
+        raw_keyword = list(map(normalize.clean_dot, raw_keyword))
 
         ''' specific spellcheck '''
         terms_specific = load_config.load_specific()
-        paramCut = list(
-            map(spell_check.spellcheck_specific_term, paramCut, repeat(terms_specific)))
+        raw_keyword = list(
+            map(spell_check.spellcheck_specific_term, raw_keyword, repeat(terms_specific)))
 
         """ stopcut delete """
-        paramCut = list(filter(clean_stop_word.filter_stop_word, paramCut))
+        raw_keyword = list(
+            filter(clean_stop_word.filter_stop_word, raw_keyword))
 
-        ''' extend to array (JOIN THREAD) result '''
-        list_word_extend.extend(paramCut)
-        print(key + '-> end')
+        page_index = re.search(r'(?<=page-)\d+(?=.txt)',
+                               key).group(0)
 
-    ''' Thread limit task '''
-    with cf.ThreadPoolExecutor(max_workers=5) as executor:
+        page_set.append({"page_index": page_index,
+                         "name": key, "arr_key": raw_keyword})
+        print('end =>', key)
+
+    with cf.ThreadPoolExecutor(max_workers=3) as executor:
         for key, value in documents.items():
-            executor.submit(childTokenizer, value, key)
+            executor.submit(main, key, value)
 
-    ''' Basic for loop '''
     # for key, value in documents.items():
-    #     childTokenizer(value, key)
+    #     main(key, value)
 
-    ''' stemming term '''
-    list_word_extend = list(map(stemming.lemmatizer, list_word_extend))
+    for page in page_set:
+        raw_keyword = page['arr_key']
+        ''' stemming term '''
+        raw_keyword = list(map(stemming.lemmatizer, raw_keyword))
+        sdb.manage_pre_keyword(page, doc_id, raw_keyword)
 
-    ''' calculate TF '''
-    unique = create_unique.unique(list_word_extend)
-    documentsFreq = create_frame.createFrame(list_word_extend, unique)
+
+def calculateTf(listWord):
+    unique = create_unique.unique(listWord)
+    documentsFreq = create_frame.createFrame(listWord, unique)
     tf = term_frequency.logTF(documentsFreq)
 
     return tf
