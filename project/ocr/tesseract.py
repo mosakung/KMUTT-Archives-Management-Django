@@ -15,8 +15,8 @@ pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tessera
 
 FILENAME=""
 ROOT = os.path.abspath(os.getcwd())
-PATH_IMAGE ="../ocr-tesseract/image/"+FILENAME
-PATH_REPORT = ROOT + "/report/"
+PATH_IMAGE ="../images/"+FILENAME
+PATH_REPORT = ROOT + "/document/"
 PATH_DOC = PATH_REPORT + "report-"+FILENAME + ".docx"
 
 def CalculateTextConfident(Text):
@@ -43,7 +43,7 @@ def setGlobalVariable(fileName):
     global PATH_DOC
     FILENAME = fileName
     PATH_DOC = PATH_REPORT + "report-"+FILENAME + ".docx"
-    PATH_IMAGE ="../ocr-tesseract/image/"+FILENAME
+    PATH_IMAGE ="../images/"+FILENAME
 
 def prepareOCR(imagePrepare, page, mydoc=False):
     skipPage = Imp.skipPage(imagePrepare)
@@ -67,9 +67,8 @@ def prepareOCR(imagePrepare, page, mydoc=False):
         print("Page: ", page, "complete")
         return fulltext
 
-def main():
-    fileName="200education"
-    PI.convertPdftoJpg("200education", "200education")
+def main(fileName):
+    PI.convertPdftoJpg(fileName, fileName)
     setGlobalVariable(fileName)
     Doc.createDirectory(PATH_REPORT)
     Doc.createDirectory(PATH_REPORT+"/"+FILENAME)

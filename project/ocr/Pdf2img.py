@@ -6,7 +6,7 @@ from pdf2image import convert_from_path
 
 def convertPdftoJpg(pathName,pdfName):
     # define the name of the directory to be created
-    path = "../ocr-tesseract/image/"+pathName
+    path = "../images/"+pathName
     try:
         os.mkdir(path)
         print ("Successfully created the directory %s" % path)
@@ -15,8 +15,8 @@ def convertPdftoJpg(pathName,pdfName):
     else:
         print ("Already have the directory %s" % path)
 
-    poppler_path = r'E:\Kmutt\final project\ocr-tesseract\poppler-0.68.0\bin'
-    pages = convert_from_path('../ocr-tesseract/pdf/'+ pdfName +'.pdf',dpi=300,poppler_path=poppler_path,size=2000)
+    poppler_path = r'./poppler-0.68.0/bin'
+    pages = convert_from_path('../pdf/'+ pdfName +'.pdf',dpi=300,poppler_path=poppler_path,size=2000)
     count = 1
     for page in pages:
         page.save(path+'/page'+str(count)+'.jpg', fmt='jpg')

@@ -16,6 +16,13 @@ djangorestframework = "*"
 nltk = "*"
 django-cors-headers = "*"
 mysqlclient = "*"
+pillow = "*"
+docx = "*"
+shapely = "*"
+pytesseract = "*"
+opencv-python = "*"
+pdf2image = "*"
+scipy = "*"
 
 [requires]
 python_version = "3.7"

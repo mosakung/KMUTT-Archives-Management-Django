@@ -14,6 +14,8 @@ from service_nlp import service_sys as ss
 from service_nlp import service_db as sdb
 # db
 from service_nlp import manage_db as db
+# ocr
+from ocr import tesseract as ocr
 
 from service_nlp.Request.request import send_ping
 
@@ -86,6 +88,7 @@ def request_add_document(request):
             main_input_document = data['document']
             main_input_user = data['user']
             path_directory = main_input_document['path']
+            filename = main_input_document['name']
 
             ''' add document '''
             document_detail = sdb.addDocumnet(main_input_document)
@@ -94,7 +97,8 @@ def request_add_document(request):
             ).get(
                 'document_id'
             )
-
+            ''' OCR '''
+            ocr.main(filename)
             ''' initialize PRE keyword '''
             ss.initialize_PRE_keyword(path_directory, index_document)
             sdb.task_initialize_PRE_keyword_done(index_document)
