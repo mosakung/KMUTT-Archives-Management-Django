@@ -1,3 +1,4 @@
+import math
 from django.db.models import Max, F, OuterRef, Subquery, Q
 from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser
@@ -374,7 +375,7 @@ def update_IDF_mono(term, N):
         row = Term_word.objects.get(
             term=term
         )
-        row.score_idf = N / row.frequency
+        row.score_idf = math.log10(N / row.frequency)
         row.save()
         serializers = Term_wordSerializer(row)
 
@@ -387,7 +388,7 @@ def update_IDF_mono(term, N):
 
 def update_IDF_all(N):
     rows = Term_word.objects.all()
-    rows.update(score_idf=N / F('frequency'))
+    rows.update(score_idf=math.log10(N / F('frequency')))
     serializers = Term_wordSerializer(rows, many=True)
     result = serializers.data
     return result
