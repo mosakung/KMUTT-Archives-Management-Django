@@ -1,7 +1,8 @@
 import numpy as np
 import pytesseract
 from pytesseract import Output
-import sys,os
+import sys
+import os
 import cv2
 import concurrent.futures as cf
 
@@ -13,29 +14,36 @@ pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tessera
 
 ### Global variable ###
 
-FILENAME=""
+FILENAME = ""
 ROOT = os.path.abspath(os.getcwd())
-PATH_IMAGE ="../images/"+FILENAME
-PATH_REPORT = ROOT + "/document/"
+PATH_IMAGE = ROOT+"/project/images/"+FILENAME
+PATH_REPORT = ROOT + "/report/"
 PATH_DOC = PATH_REPORT + "report-"+FILENAME + ".docx"
+
 
 def CalculateTextConfident(Text):
     textConcat = ''
     for i in range(len(Text['text'])):
-        if int(Text['conf'][i])>=35:
+        if int(Text['conf'][i]) >= 35:
             textConcat = textConcat+Text['text'][i]
     return textConcat
 
+
 def tesseractOcr(picture, page, reportName, reportDoc=False):
     imageOCR = cv2.cvtColor(picture, cv2.COLOR_BGR2GRAY)
-    # textconfident = pytesseract.image_to_data(imageOCR, lang='tha+eng',output_type=Output.DICT) 
+    custom_config = r'--oem 1'
+    config = custom_config
+    # textconfident = pytesseract.image_to_data(
+    # imageOCR, lang = 'tha+eng', output_type = Output.DICT, config = custom_config)
     # textcon = CalculateTextConfident(textconfident)
-    text = pytesseract.image_to_string(imageOCR, lang='tha+eng')
+    text = pytesseract.image_to_string(
+        imageOCR, lang='tha+eng', config=custom_config)
     # for add context docx to check error
     cleanText = Doc.cleanTextRegex(text)
-    if cleanText:            
+    if cleanText:
         return cleanText
     return False
+
 
 def setGlobalVariable(fileName):
     global FILENAME
@@ -43,39 +51,40 @@ def setGlobalVariable(fileName):
     global PATH_DOC
     FILENAME = fileName
     PATH_DOC = PATH_REPORT + "report-"+FILENAME + ".docx"
-    PATH_IMAGE ="../images/"+FILENAME
+    PATH_IMAGE = ROOT+"/project/images/"+FILENAME
+
 
 def prepareOCR(imagePrepare, page, mydoc=False):
     skipPage = Imp.skipPage(imagePrepare)
     if not skipPage:
-        #remove picture & line & get angle to rotated 
+        # remove picture & line & get angle to rotated
         imageOnlyText, angleBox, externalBox = Imp.prepareRotated(imagePrepare)
         imageRemoveLine = Imp.removeLine(imageOnlyText)
-        #rotated & OCR image
+        # rotated & OCR image
         fulltext = ''
         if mydoc:
-            mydoc.add_heading("Page: "+str(page), 0) 
+            mydoc.add_heading("Page: "+str(page), 0)
         for inx, box in enumerate(externalBox):
-            imageRotated= Imp.rotated(imageRemoveLine,angleBox,inx,box)
+            imageRotated = Imp.rotated(imageRemoveLine, angleBox, inx, box)
             text = tesseractOcr(imageRotated, page, FILENAME, mydoc)
             if text:
                 fulltext = fulltext + " " + text
                 if mydoc:
                     Doc.addReportDoc(text, imageRotated, mydoc, PATH_DOC)
-        #add text to file for TF/IDoc
+        # add text to file for TF/IDoc
+        Doc.createDirectory(PATH_REPORT)
         Doc.addReportText(fulltext, page, FILENAME)
-        print("Page: ", page, "complete")
         return fulltext
 
-def main(fileName):
-    PI.convertPdftoJpg(fileName, fileName)
-    setGlobalVariable(fileName)
+
+def main(fileName, name):
+    PI.convertPdftoJpg(name, fileName)
+    setGlobalVariable(name)
     Doc.createDirectory(PATH_REPORT)
     Doc.createDirectory(PATH_REPORT+"/"+FILENAME)
-    #### report
+    # report
     # mydoc = Doc.createDoc(PATH_DOC)
     ####
-    page = 1
     poolOCR = cf.ThreadPoolExecutor(max_workers=2)
     while(True):
         loopPage = Doc.checkFile(PATH_IMAGE + "/page"+str(page)+".jpg")
@@ -83,18 +92,18 @@ def main(fileName):
             image = cv2.imread(PATH_IMAGE + "/page"+str(page)+".jpg")
             imagePrepare = image.copy()
             poolOCR.submit(prepareOCR, imagePrepare, page)
-            page += 1
+            # prepareOCR(imagePrepare, page, mydoc)
         else:
             break
 
+
 # Handle Ctrl-C Interrupt
 if __name__ == '__main__':
-   try:
-     main()
-   except KeyboardInterrupt:
-     print ('\nInterrupted ..')
-     try:
-       sys.exit(0)
-     except SystemExit:
-       os._exit(0)
-
+    try:
+        main()
+    except KeyboardInterrupt:
+        print('\nInterrupted ..')
+        try:
+            sys.exit(0)
+        except SystemExit:
+            os._exit(0)
