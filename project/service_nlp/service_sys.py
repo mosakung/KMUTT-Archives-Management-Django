@@ -38,7 +38,7 @@ def initialize_PRE_keyword(directoryName, doc_id):
             raw_keyword.extend(process)
 
         ''' pyspellcheck '''
-        # raw_keyword = list(map(spell_check.spellCheckEnTh, raw_keyword))
+        raw_keyword = list(map(spell_check.spellCheckEnTh, raw_keyword))
 
         """ Normalize """
         raw_keyword = list(map(normalize.clean_dot, raw_keyword))

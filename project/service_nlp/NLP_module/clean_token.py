@@ -3,7 +3,7 @@ import re as regex
 
 def delete_unnecessary_words(array_word):
     unnecessary_words = [" ", '\r\n', '', ',',
-                         '-', '_', '(', ')', '\'', '\"', '.']
+                         '-', '_', '(', ')', '\'', '\"', '.', "/"]
 
     # loop unnecessary_words
     for un_word in unnecessary_words:
