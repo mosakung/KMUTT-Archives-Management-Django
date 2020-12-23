@@ -6,9 +6,9 @@ import os
 import cv2
 import concurrent.futures as cf
 
-import Pdf2img as PI
-import document as Doc
-import imageprocessing as Imp
+import ocr.Pdf2img as PI
+import ocr.document as Doc
+import ocr.imageprocessing as Imp
 
 pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
 

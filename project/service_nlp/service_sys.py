@@ -24,6 +24,7 @@ def initialize_PRE_keyword(directoryName, doc_id):
     documents = read_document.readDirectory(pathRead)
 
     def main(key, value_arr):
+        print('start =>', key)
         raw_keyword = []
         ''' loop line in document '''
         for value in value_arr:
@@ -52,8 +53,11 @@ def initialize_PRE_keyword(directoryName, doc_id):
         raw_keyword = list(
             filter(clean_stop_word.filter_stop_word, raw_keyword))
 
-        page_index = re.search(r'(?<=page-)\d+(?=.txt)',
-                               key).group(0)
+        page_index = 0
+        re_index = re.search(r'(?<=page-)\d+(?=.txt)', key)
+
+        if re_index != None:
+            page_index = re_index.group(0)
 
         page_set.append({"page_index": page_index,
                          "name": key, "arr_key": raw_keyword})

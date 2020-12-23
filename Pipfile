@@ -17,12 +17,12 @@ nltk = "*"
 django-cors-headers = "*"
 mysqlclient = "*"
 pillow = "*"
-docx = "*"
 shapely = "*"
 pytesseract = "*"
 opencv-python = "*"
 pdf2image = "*"
 scipy = "*"
+python-docx = "*"
 
 [requires]
 python_version = "3.7"

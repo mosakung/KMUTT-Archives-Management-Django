@@ -97,8 +97,8 @@ def request_add_document(request):
             ).get(
                 'document_id'
             )
-            ''' OCR '''
-            ocr.main(filename)
+            # ''' OCR '''
+            # ocr.main(filename)
             ''' initialize PRE keyword '''
             ss.initialize_PRE_keyword(path_directory, index_document)
             sdb.task_initialize_PRE_keyword_done(index_document)
@@ -108,7 +108,7 @@ def request_add_document(request):
         if ask_status:
             GLOBAL_POOL.submit(main, data)
 
-        ''' Basic run '''
+        # ''' Basic run '''
         # if ask_status:
         #     main(data)
 
