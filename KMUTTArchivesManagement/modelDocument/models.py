@@ -10,7 +10,7 @@ class Document(models.Model):
     version = models.IntegerField(null=False)
     path = models.TextField(null=False)
     DC_title = models.CharField(null=False, max_length=191)
-    DC_title_alternative = models.CharField(null=False, max_length=191)
+    DC_title_alternative = models.CharField(null=True, max_length=191)
     DC_description_table_of_contents = models.TextField(null=True)
     DC_description_summary_or_abstract = models.TextField(null=True)
     DC_description_note = models.TextField(null=True)

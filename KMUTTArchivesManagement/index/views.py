@@ -4,25 +4,76 @@ from django.http import JsonResponse
 from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser
 from django.views.decorators.csrf import csrf_exempt
+from rest_framework.decorators import api_view
 
 from modelUser.views import UserController
+from modelDocument.views import DocumentController
+from modelDocument.views import getDocumentStatus
+from modelPreTerm.views import PerTermController
+from modelPreTerm.views import PerTermRepository
+from modelTerm.views import TfIdf
 
-from modelUser.models import User
-from modelUser.serializers import UserSerializer
-
-userController = UserController()
+from django.conf import settings
 
 
-@csrf_exempt
-def request_test(request):
+@api_view(['POST'])
+def API_Add_Document(request):
+    if request.method == 'POST':
+        data = JSONParser().parse(request)
+        document = DocumentController(data)
+
+        def main(documentHelper):
+            documentPK = documentHelper.add()
+            pathToDirectory = documentHelper.getPathDicrectory()
+            perTerm = PerTermController(pathToDirectory, documentPK)
+            perTerm.manage()
+            documentHelper.done(documentPK)
+            print("<END PROCESS> Add Document (", documentPK, ")")
+            return True
+
+        permission, message = document.ask()
+
+        if permission:
+            # main(document)
+            settings.SLOW_POOL.submit(main, document)
+
+        return JsonResponse({
+            'status': permission,
+            'message': message,
+            'prev_body': data,
+        })
+
+
+@api_view(['POST'])
+def API_INIT_TF(request):
     if request.method == 'POST':
         data = JSONParser().parse(request)
 
-        print(data)
+        pkDocument = data.get('documentId')
 
-        users = userController.delete(5)
+        if pkDocument == None:
+            return JsonResponse({
+                'message': False,
+            })
 
-        print(users)
+        statusDocument = getDocumentStatus(pkDocument)
+
+        def main(documentIndex):
+            repo = PerTermRepository(documentIndex)
+            terms = repo.query()
+            tfidfHelper = TfIdf(terms, documentIndex)
+            tfidfHelper.manage()
+            tfidfHelper.done()
+            print("<END PROCESS> init TF-IDF Document (", documentIndex, ")")
+            return True
+
+        if statusDocument == 1:
+            # main(pkDocument)
+            settings.FAST_POOL.submit(main, pkDocument)
+        else:
+            return JsonResponse({
+                'message': False,
+            })
 
         return JsonResponse({
             'message': True,

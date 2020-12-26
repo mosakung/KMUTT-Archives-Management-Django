@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
+import concurrent.futures as cf
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -135,3 +136,7 @@ CORS_ORIGIN_ALLOW_ALL = True
 CORS_ORIGIN_WHITELIST = (
     'http://localhost:3251',
 )
+
+
+SLOW_POOL = cf.ThreadPoolExecutor(max_workers=1)
+FAST_POOL = cf.ThreadPoolExecutor(max_workers=1)

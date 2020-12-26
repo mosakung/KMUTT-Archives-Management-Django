@@ -19,5 +19,6 @@ from index import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('usertest/', views.request_test),
+    path('add-document/', views.API_Add_Document),
+    path('start-TF/', views.API_INIT_TF)
 ]

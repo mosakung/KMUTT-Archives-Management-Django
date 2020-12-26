@@ -58,7 +58,8 @@ class DocumentSerializer(DynamicFieldsModelSerializer):
                   'index_creator',
                   'index_creator_orgname',
                   'index_publisher',
-                  'index_contributor',)
+                  'index_contributor',
+                  'index_issued_date')
 
     def create(self, validated_data):
         return Document.objects.create(**validated_data)
@@ -128,7 +129,7 @@ class DocumentSerializer(DynamicFieldsModelSerializer):
         return instance
 
 
-class Dc_keywordSerializer(DynamicFieldsModelSerializer):
+class DcKeywordSerializer(DynamicFieldsModelSerializer):
     class Meta:
         model = Dc_keyword
         fields = ('DC_keyword_id',
@@ -149,7 +150,7 @@ class Dc_keywordSerializer(DynamicFieldsModelSerializer):
         return instance
 
 
-class Dc_relationSerializer(DynamicFieldsModelSerializer):
+class DcRelationSerializer(DynamicFieldsModelSerializer):
     class Meta:
         model = Dc_relation
         fields = ('DC_relation_id',
@@ -170,7 +171,7 @@ class Dc_relationSerializer(DynamicFieldsModelSerializer):
         return instance
 
 
-class Dc_typeSerializer(DynamicFieldsModelSerializer):
+class DcTypeSerializer(DynamicFieldsModelSerializer):
     class Meta:
         model = Dc_type
         fields = ('DC_type_id',
@@ -190,7 +191,7 @@ class Dc_typeSerializer(DynamicFieldsModelSerializer):
         return instance
 
 
-class Indexing_contributor_documentSerializer(DynamicFieldsModelSerializer):
+class IndexingContributorDocumentSerializer(DynamicFieldsModelSerializer):
 
     class Meta:
         model = Indexing_contributor_document
@@ -215,7 +216,7 @@ class Indexing_contributor_documentSerializer(DynamicFieldsModelSerializer):
         return instance
 
 
-class Indexing_creator_documentSerializer(DynamicFieldsModelSerializer):
+class IndexingCreatorDocumentSerializer(DynamicFieldsModelSerializer):
 
     class Meta:
         model = Indexing_creator_document
@@ -236,7 +237,7 @@ class Indexing_creator_documentSerializer(DynamicFieldsModelSerializer):
         return instance
 
 
-class Indexing_creator_orgname_documentSerializer(DynamicFieldsModelSerializer):
+class IndexingCreatorOrgnameDocumentSerializer(DynamicFieldsModelSerializer):
 
     class Meta:
         model = Indexing_creator_orgname_document
@@ -258,7 +259,7 @@ class Indexing_creator_orgname_documentSerializer(DynamicFieldsModelSerializer):
         return instance
 
 
-class Indexing_publisher_documentSerializer(DynamicFieldsModelSerializer):
+class IndexingPublisherDocumentSerializer(DynamicFieldsModelSerializer):
 
     class Meta:
         model = Indexing_publisher_document
@@ -283,7 +284,7 @@ class Indexing_publisher_documentSerializer(DynamicFieldsModelSerializer):
         return instance
 
 
-class Indexing_issued_date_documentSerializer(DynamicFieldsModelSerializer):
+class IndexingIssuedDateDocumentSerializer(DynamicFieldsModelSerializer):
 
     class Meta:
         model = Indexing_issued_date_document
