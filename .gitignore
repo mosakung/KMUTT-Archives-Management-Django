@@ -135,6 +135,6 @@ dmypy.json
 # document
 
 /project/document
-/KMUTTArchivesManagement/document-image
-/KMUTTArchivesManagement/document-pdf
-/KMUTTArchivesManagement/document-report
+/KMUTTArchivesManagement/document-image/**
+/KMUTTArchivesManagement/document-pdf/**
+/KMUTTArchivesManagement/document-report/**

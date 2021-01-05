@@ -78,7 +78,7 @@ class PerTermController(PageInDocumentController, PerTermInPageController):
     def __init__(self, directoryName, index_document):
         self.directoryName = directoryName
         self.index_document = index_document
-        self.pathToDirectory = './document-report' + directoryName
+        self.pathToDirectory = directoryName
 
         super().__init__(
             index_document=self.index_document
