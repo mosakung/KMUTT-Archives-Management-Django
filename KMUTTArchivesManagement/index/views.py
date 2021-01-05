@@ -12,7 +12,7 @@ from modelDocument.views import getDocumentStatus
 from modelPreTerm.views import PerTermController
 from modelPreTerm.views import PerTermRepository
 from modelTerm.views import TfIdf
-
+from ocr.tesseract import main as ocr
 from django.conf import settings
 
 
@@ -25,6 +25,9 @@ def API_Add_Document(request):
         def main(documentHelper):
             documentPK = documentHelper.add()
             pathToDirectory = documentHelper.getPathDicrectory()
+
+            ocr(pathToDirectory.split("/")[1], pathToDirectory)
+
             perTerm = PerTermController(pathToDirectory, documentPK)
             perTerm.manage()
             documentHelper.done(documentPK)

@@ -78,7 +78,7 @@ class PerTermController(PageInDocumentController, PerTermInPageController):
     def __init__(self, directoryName, index_document):
         self.directoryName = directoryName
         self.index_document = index_document
-        self.pathToDirectory = './document' + directoryName
+        self.pathToDirectory = './document-report' + directoryName
 
         super().__init__(
             index_document=self.index_document
@@ -116,7 +116,7 @@ class PerTermController(PageInDocumentController, PerTermInPageController):
             regexSearch = re.search(r'(?<=page-)\d+(?=.txt)', filename)
 
             if regexSearch != None:
-                page_index = regexSearch.group(0)
+                pageIndex = regexSearch.group(0)
 
             pageSet.append({
                 "pageIndex": pageIndex,
@@ -132,6 +132,7 @@ class PerTermController(PageInDocumentController, PerTermInPageController):
         # for filename, fulltext in directory.items():
         #     main(filename, fulltext)
 
+        print("I see")
         for page in pageSet:
             keys = page.get('rawKeywords')
             filename = page.get('filename')
