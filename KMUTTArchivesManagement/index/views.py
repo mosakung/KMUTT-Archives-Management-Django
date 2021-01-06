@@ -25,10 +25,12 @@ def API_Add_Document(request):
         def main(documentHelper):
             documentPK = documentHelper.add()
             pathToDirectory = documentHelper.getPathDicrectory()
+            filename = documentHelper.getFileName()
+            startPage = documentHelper.getStartPageOCR()
 
-            ocr(pathToDirectory.split("/")[1], pathToDirectory)
+            ocr(filename, pathToDirectory, startPage)
 
-            perTerm = PerTermController(pathToDirectory, documentPK)
+            perTerm = PerTermController(filename, documentPK)
             perTerm.manage()
             documentHelper.done(documentPK)
             print("<END PROCESS> Add Document (", documentPK, ")")
@@ -37,8 +39,8 @@ def API_Add_Document(request):
         permission, message = document.ask()
 
         if permission:
-            # main(document)
-            settings.SLOW_POOL.submit(main, document)
+            main(document)
+            # settings.SLOW_POOL.submit(main, document)
 
         return JsonResponse({
             'status': permission,
