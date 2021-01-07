@@ -9,6 +9,7 @@ class Document(models.Model):
     name = models.CharField(null=False, max_length=191)
     version = models.IntegerField(null=False)
     path = models.TextField(null=False)
+    path_image = models.TextField(null=False)
     DC_title = models.CharField(null=False, max_length=191)
     DC_title_alternative = models.CharField(null=True, max_length=191)
     DC_description_table_of_contents = models.TextField(null=True)

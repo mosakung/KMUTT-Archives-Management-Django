@@ -39,8 +39,8 @@ def API_Add_Document(request):
         permission, message = document.ask()
 
         if permission:
-            main(document)
-            # settings.SLOW_POOL.submit(main, document)
+            # main(document)
+            settings.SLOW_POOL.submit(main, document)
 
         return JsonResponse({
             'status': permission,

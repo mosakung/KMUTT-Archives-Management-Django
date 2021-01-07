@@ -125,12 +125,13 @@ class PerTermController(PageInDocumentController, PerTermInPageController):
             })
             print('<END>', filename)
 
-        # with cf.ThreadPoolExecutor(max_workers=3) as executor:
-        #     for filename, fulltext in directory.items():
-        #         executor.submit(main, filename, fulltext)
+        with cf.ThreadPoolExecutor(max_workers=3) as executor:
+            for filename, fulltext in directory.items():
+                executor.submit(main, filename, fulltext)
 
-        for filename, fulltext in directory.items():
-            main(filename, fulltext)
+        # for filename, fulltext in directory.items():
+        #     print(filename)
+        #     # main(filename, fulltext)
 
         print("I see")
         for page in pageSet:

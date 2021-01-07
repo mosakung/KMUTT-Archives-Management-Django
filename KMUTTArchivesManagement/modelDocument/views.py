@@ -1,3 +1,4 @@
+import os
 from django.shortcuts import render
 from django.db.models import Max, F, OuterRef, Subquery, Q
 
@@ -339,6 +340,7 @@ class DocumentController(
             'name': self.document.get('name'),
             'version': self.document.get('version'),
             'path': self.document.get('path'),
+            'path_image': os.path.abspath(os.getcwd())+"/document-image/"+self.document.get('name').split('.')[0],
             'DC_title': self.document.get('DC_title'),
             'DC_title_alternative': self.document.get('DC_title_alternative'),
             'DC_description_table_of_contents': self.document.get(

@@ -53,6 +53,7 @@ def setGlobalVariable(fileName):
     PATH_DOC = PATH_REPORT + "report-"+FILENAME + ".docx"
     PATH_IMAGE = os.path.join(settings.BASE_DIR, 'document-image', fileName)
 
+
 def prepareOCR(imagePrepare, page, mydoc=False):
     skipPage = Imp.skipPage(imagePrepare)
     if not skipPage:
@@ -92,12 +93,12 @@ def main(fileName, name, startPage):
             pageStr = os.path.join(PATH_IMAGE, 'page'+str(page)+'.jpg')
             image = cv2.imread(pageStr)
             imagePrepare = image.copy()
-            # poolOCR.submit(prepareOCR, imagePrepare, page)
-            prepareOCR(imagePrepare, page)
+            poolOCR.submit(prepareOCR, imagePrepare, page)
+            # prepareOCR(imagePrepare, page)
             page += 1
         else:
             break
-    # poolOCR.shutdown(wait=True)
+    poolOCR.shutdown(wait=True)
 
 
 # Handle Ctrl-C Interrupt

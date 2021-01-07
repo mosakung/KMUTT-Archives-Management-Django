@@ -32,6 +32,7 @@ class DocumentSerializer(DynamicFieldsModelSerializer):
                   'name',
                   'version',
                   'path',
+                  'path_image',
                   'DC_title',
                   'DC_title_alternative',
                   'DC_description_table_of_contents',
@@ -72,6 +73,7 @@ class DocumentSerializer(DynamicFieldsModelSerializer):
         instance.name = validated_data.get('name', instance.name)
         instance.version = validated_data.get('version', instance.version)
         instance.path = validated_data.get('path', instance.path)
+        instance.path = validated_data.get('path_image', instance.path_image)
         instance.DC_title = validated_data.get('DC_title', instance.DC_title)
         instance.DC_title_alternative = validated_data.get(
             'DC_title_alternative', instance.DC_title_alternative)
