@@ -76,9 +76,9 @@ class PerTermInPageController():
 class PerTermController(PageInDocumentController, PerTermInPageController):
 
     def __init__(self, directoryName, index_document):
-        self.directoryName = directoryName
+        self.directoryName = '/' + directoryName
         self.index_document = index_document
-        self.pathToDirectory = directoryName
+        self.pathToDirectory = './document-report/' + directoryName
 
         super().__init__(
             index_document=self.index_document
@@ -125,12 +125,12 @@ class PerTermController(PageInDocumentController, PerTermInPageController):
             })
             print('<END>', filename)
 
-        with cf.ThreadPoolExecutor(max_workers=3) as executor:
-            for filename, fulltext in directory.items():
-                executor.submit(main, filename, fulltext)
+        # with cf.ThreadPoolExecutor(max_workers=3) as executor:
+        #     for filename, fulltext in directory.items():
+        #         executor.submit(main, filename, fulltext)
 
-        # for filename, fulltext in directory.items():
-        #     main(filename, fulltext)
+        for filename, fulltext in directory.items():
+            main(filename, fulltext)
 
         print("I see")
         for page in pageSet:

@@ -9,15 +9,15 @@ import concurrent.futures as cf
 import ocr.Pdf2img as PI
 import ocr.document as Doc
 import ocr.imageprocessing as Imp
-
+from KMUTTArchivesManagement import settings
 pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
 
 ### Global variable ###
 
 FILENAME = ""
-ROOT = os.path.abspath(os.getcwd())
-PATH_IMAGE = ROOT+"/document-image/"+FILENAME
-PATH_REPORT = ROOT + "/document-report/"
+ROOT = settings.BASE_DIR
+PATH_IMAGE = os.path.join(settings.BASE_DIR, 'document-image', FILENAME)
+PATH_REPORT = os.path.join(settings.BASE_DIR, 'document-report')
 PATH_DOC = PATH_REPORT + "report-"+FILENAME + ".docx"
 
 
@@ -51,8 +51,7 @@ def setGlobalVariable(fileName):
     global PATH_DOC
     FILENAME = fileName
     PATH_DOC = PATH_REPORT + "report-"+FILENAME + ".docx"
-    PATH_IMAGE = ROOT+"/document-image/"+FILENAME
-
+    PATH_IMAGE = os.path.join(settings.BASE_DIR, 'document-image', fileName)
 
 def prepareOCR(imagePrepare, page, mydoc=False):
     skipPage = Imp.skipPage(imagePrepare)
@@ -77,27 +76,28 @@ def prepareOCR(imagePrepare, page, mydoc=False):
         return fulltext
 
 
-def main(fileName, name):
+def main(fileName, name, startPage):
     PI.convertPdftoJpg(name, fileName)
-    setGlobalVariable(name)
+    setGlobalVariable(fileName)
     Doc.createDirectory(PATH_REPORT)
     Doc.createDirectory(PATH_REPORT+"/"+FILENAME)
     # report
     # mydoc = Doc.createDoc(PATH_DOC)
     ####
     poolOCR = cf.ThreadPoolExecutor(max_workers=2)
-    page = 1
+    page = int(startPage)
     while(True):
-        loopPage = Doc.checkFile(PATH_IMAGE + "/page"+str(page)+".jpg")
+        loopPage = Doc.checkFile(PATH_IMAGE+"/page"+str(page)+".jpg")
         if loopPage:
-            image = cv2.imread(PATH_IMAGE + "/page"+str(page)+".jpg")
+            pageStr = os.path.join(PATH_IMAGE, 'page'+str(page)+'.jpg')
+            image = cv2.imread(pageStr)
             imagePrepare = image.copy()
-            poolOCR.submit(prepareOCR, imagePrepare, page)
-            # prepareOCR(imagePrepare, page)
+            # poolOCR.submit(prepareOCR, imagePrepare, page)
+            prepareOCR(imagePrepare, page)
             page += 1
         else:
             break
-    poolOCR.shutdown(wait=True)
+    # poolOCR.shutdown(wait=True)
 
 
 # Handle Ctrl-C Interrupt

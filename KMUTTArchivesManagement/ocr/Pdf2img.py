@@ -9,7 +9,7 @@ ROOT = os.path.abspath(os.getcwd())
 
 def convertPdftoJpg(pathName, pdfName):
     # define the name of the directory to be created
-    path = ROOT + "/document-image" + pathName
+    path = ROOT + "/document-image/" + pdfName
     try:
         os.mkdir(path)
         print("Successfully created the directory %s" % path)
@@ -19,7 +19,7 @@ def convertPdftoJpg(pathName, pdfName):
         print("Already have the directory %s" % path)
     poppler_path = ROOT+"\ocr\poppler-0.68.0\\bin"
     pages = convert_from_path(
-        ROOT+'/document-pdf/' + pdfName + '.pdf', dpi=300, poppler_path=poppler_path, size=(2000, None))
+        pathName, dpi=300, poppler_path=poppler_path, size=(2000, None))
     count = 1
     for page in pages:
         page.save(path+'/page'+str(count)+'.jpg', fmt='jpg')

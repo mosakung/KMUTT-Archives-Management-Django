@@ -23,6 +23,7 @@ opencv-python = "*"
 pdf2image = "*"
 scipy = "*"
 python-docx = "*"
+numpy = "1.19.3"
 
 [requires]
 python_version = "3.7"

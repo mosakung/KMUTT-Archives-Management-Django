@@ -299,17 +299,24 @@ class DocumentController(
     def getPathDicrectory(self):
         return self.document.get('path')
 
+    def getFileName(self):
+        filename = self.document.get('name').split('.')[0]
+        return filename
+
+    def getStartPageOCR(self):
+        return self.document.get('startPage')
+
     def ask(self):
-        name = self.document.get('name')
+        DC_title = self.document.get('DC_title')
         forceAdd = self.document.get('add_version')
 
-        if name == None:
-            return False, "pls input name document"
+        if DC_title == None:
+            return False, "pls input DC_title document"
 
         if forceAdd == True:
             return True, "wait add document processing (Force Version)"
 
-        documents = Document.objects.filter(name=name)
+        documents = Document.objects.filter(DC_title=DC_title)
 
         if not documents:
             return True, "wait add document processing"
