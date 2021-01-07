@@ -20,5 +20,6 @@ from index import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('add-document/', views.API_Add_Document),
-    path('start-TF/', views.API_INIT_TF)
+    path('start-TF/', views.API_INIT_TF),
+    path('deepcut/', views.API_Deepcut)
 ]

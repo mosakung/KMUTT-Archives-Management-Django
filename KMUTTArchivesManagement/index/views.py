@@ -15,6 +15,8 @@ from modelTerm.views import TfIdf
 from ocr.tesseract import main as ocr
 from django.conf import settings
 
+from tokenizer.deepcut import deepcut
+
 
 @api_view(['POST'])
 def API_Add_Document(request):
@@ -80,4 +82,17 @@ def API_INIT_TF(request):
 
         return JsonResponse({
             'message': True,
+        })
+
+
+@api_view(['POST'])
+def API_Deepcut(request):
+    if request.method == 'POST':
+        data = JSONParser().parse(request)
+        fulltext = data.get('fulltext')
+
+        tokens = deepcut(fulltext)
+
+        return JsonResponse({
+            'tokens': tokens,
         })
