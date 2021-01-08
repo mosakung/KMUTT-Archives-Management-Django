@@ -97,6 +97,7 @@ class PerTermController(PageInDocumentController, PerTermInPageController):
                 token = deepcut(line)
                 # clean token
                 token = list(map(delete_space, token))
+                token = list(map(delete_latin, token))
                 token = list(filter(delete_unnecessary_words, token))
                 token = list(map(to_lower_case, token))
                 # push to corpus
@@ -130,10 +131,8 @@ class PerTermController(PageInDocumentController, PerTermInPageController):
                 executor.submit(main, filename, fulltext)
 
         # for filename, fulltext in directory.items():
-        #     print(filename)
-        #     # main(filename, fulltext)
+        #     main(filename, fulltext)
 
-        print("I see")
         for page in pageSet:
             keys = page.get('rawKeywords')
             filename = page.get('filename')

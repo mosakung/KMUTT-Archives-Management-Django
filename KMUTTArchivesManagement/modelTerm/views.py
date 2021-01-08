@@ -1,4 +1,4 @@
-from django.db.models import Max, F, OuterRef, Subquery, Q
+from django.db.models import Max, F, OuterRef, Subquery, Q, Count
 from datetime import datetime
 import math
 from django.shortcuts import render
@@ -92,7 +92,9 @@ class TermwordController():
             return False
 
     def patch_IDF_score(self, pkTerms):
-        N = Document.objects.count()
+        N = Document.objects.filter(
+            status_process_document=5
+        ).count() + 1
 
         for pk in pkTerms:
             try:
@@ -173,12 +175,12 @@ class TfIdf(TermFrequency, TermwordController, ScoreController):
             documentId=documentId
         )
 
-    def done(self):
+    def done(self, status):
         try:
             document = Document.objects.get(pk=self.documentId)
             insertData = {
                 'name': document.name,
-                'status_process_document': 2
+                'status_process_document': status
             }
             serializer = DocumentSerializer(
                 document, data=insertData, partial=True)

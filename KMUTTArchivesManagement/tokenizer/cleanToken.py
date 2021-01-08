@@ -19,3 +19,7 @@ def delete_unnecessary_words(word):
 
 def delete_space(word):
     return regex.sub(r'\s', '', word)
+
+
+def delete_latin(word):
+    return regex.sub(r'[\x80-\xFF\u0100-\u017F\u0180-\u024F\u1E00-\u1EFF]', '', word)

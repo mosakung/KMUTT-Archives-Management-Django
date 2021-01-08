@@ -263,6 +263,7 @@ class DocumentController(
     def __init__(self, reqBody):
         self.user = reqBody.get('user')
         self.document = reqBody.get('document')
+        self.documentId = None
 
         super().__init__(
             contributor=self.document.get('DC_contributor'),
@@ -276,12 +277,12 @@ class DocumentController(
             Dc_type=self.document.get('DC_type')
         )
 
-    def done(self, documentIndex):
+    def done(self, documentIndex, status):
         try:
             document = Document.objects.get(pk=documentIndex)
             insertData = {
                 'name': document.name,
-                'status_process_document': 1
+                'status_process_document': status
             }
             serializer = DocumentSerializer(
                 document, data=insertData, partial=True)
@@ -303,6 +304,9 @@ class DocumentController(
     def getFileName(self):
         filename = self.document.get('name').split('.')[0]
         return filename
+
+    def getDocumentId(self):
+        return self.documentId
 
     def getStartPageOCR(self):
         return self.document.get('startPage')
@@ -415,6 +419,8 @@ class DocumentController(
             self.insertDcRelation(index_documnet)
         if not self.document.get('DC_type') == None:
             self.insertDcType(index_documnet)
+
+        self.documentId = index_documnet
 
         return index_documnet
 

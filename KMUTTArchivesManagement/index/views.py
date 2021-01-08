@@ -25,28 +25,34 @@ def API_Add_Document(request):
         document = DocumentController(data)
 
         def main(documentHelper):
-            documentPK = documentHelper.add()
+            documentPK = documentHelper.getDocumentId()
             pathToDirectory = documentHelper.getPathDicrectory()
             filename = documentHelper.getFileName()
             startPage = documentHelper.getStartPageOCR()
+            documentHelper.done(documentPK, 1)
 
             ocr(filename, pathToDirectory, startPage)
+            documentHelper.done(documentPK, 2)
 
             perTerm = PerTermController(filename, documentPK)
             perTerm.manage()
-            documentHelper.done(documentPK)
+            documentHelper.done(documentPK, 3)
             print("<END PROCESS> Add Document (", documentPK, ")")
             return True
 
         permission, message = document.ask()
 
         if permission:
+            documentId = document.add()
             # main(document)
             settings.SLOW_POOL.submit(main, document)
+        else:
+            documentId = None
 
         return JsonResponse({
             'status': permission,
             'message': message,
+            'documentId': documentId,
             'prev_body': data,
         })
 
@@ -69,21 +75,24 @@ def API_INIT_TF(request):
             repo = PerTermRepository(documentIndex)
             terms = repo.query()
             tfidfHelper = TfIdf(terms, documentIndex)
+            tfidfHelper.done(4)
             tfidfHelper.manage()
-            tfidfHelper.done()
+            tfidfHelper.done(5)
             print("<END PROCESS> init TF-IDF Document (", documentIndex, ")")
             return True
 
-        if statusDocument == 1:
+        if statusDocument == 3:
             # main(pkDocument)
             settings.FAST_POOL.submit(main, pkDocument)
         else:
             return JsonResponse({
-                'message': False,
+                'status': False,
+                'message': 'The documenting process does not match this procedure',
             })
 
         return JsonResponse({
-            'message': True,
+            'status': True,
+            'message': 'TFIDF initialization is in progress, please wait',
         })
 
 
