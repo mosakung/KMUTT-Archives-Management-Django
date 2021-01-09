@@ -343,6 +343,8 @@ class DocumentController(
             'status_process_document': 0,
             'name': self.document.get('name'),
             'version': self.document.get('version'),
+            'page_start': self.document.get('page_start'),
+            'amount_page': 0,
             'path': self.document.get('path'),
             'path_image': os.path.abspath(os.getcwd())+"/document-image/"+self.document.get('name').split('.')[0],
             'DC_title': self.document.get('DC_title'),
@@ -362,6 +364,7 @@ class DocumentController(
             'DC_language': self.document.get('DC_language'),
             'DC_coverage_spatial': self.document.get('DC_coverage_spatial'),
             'DC_coverage_temporal': self.document.get('DC_coverage_temporal'),
+            'DC_coverage_temporal_year': self.document.get('DC_coverage_temporal_year'),
             'DC_rights': self.document.get('DC_rights'),
             'DC_rights_access': self.document.get('DC_rights_access'),
             'thesis_degree_name': self.document.get('thesis_degree_name'),
@@ -374,7 +377,7 @@ class DocumentController(
             'index_contributor': self.document.get('index_contributor'),
             'index_issued_date': self.document.get('index_issued_date'),
             'rec_create_by': self.document.get('rec_create_by'),
-            'rec_modified_by': self.document.get('rec_create_by')
+            'rec_modified_by': self.document.get('rec_create_by'),
         }
         serializer = DocumentSerializer(data=insertData)
         if serializer.is_valid():
@@ -423,6 +426,30 @@ class DocumentController(
         self.documentId = index_documnet
 
         return index_documnet
+
+    def updateAmountPage(self):
+        pathImage = self.document.get('path_image')
+        amountPage = len([name for name in os.listdir(pathImage)
+                          if os.path.isfile(os.path.join(pathImage, name))])
+
+        try:
+            document = Document.objects.get(pk=self.documentId)
+            insertData = {
+                'amount_page': amountPage,
+            }
+            serializer = DocumentSerializer(
+                document, data=insertData, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                return serializer.data
+            print(serializer.errors)
+            return False
+        except Document.DoesNotExist:
+            print("<EXCEPT> Document DoesNotExist updateAmountPage")
+            return False
+        except Document.MultipleObjectsReturned:
+            print("<EXCEPT> Document MultipleObjectsReturned updateAmountPage")
+            return False
 
 
 def getDocumentStatus(documentId):

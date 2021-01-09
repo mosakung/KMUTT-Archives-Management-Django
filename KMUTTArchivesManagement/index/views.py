@@ -33,6 +33,7 @@ def API_Add_Document(request):
 
             ocr(filename, pathToDirectory, startPage)
             documentHelper.done(documentPK, 2)
+            documentHelper.updateAmountPage()
 
             perTerm = PerTermController(filename, documentPK)
             perTerm.manage()

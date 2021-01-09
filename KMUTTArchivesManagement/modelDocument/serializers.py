@@ -31,6 +31,8 @@ class DocumentSerializer(DynamicFieldsModelSerializer):
                   'status_process_document',
                   'name',
                   'version',
+                  'page_start',
+                  'amount_page',
                   'path',
                   'path_image',
                   'DC_title',
@@ -46,6 +48,7 @@ class DocumentSerializer(DynamicFieldsModelSerializer):
                   'DC_language',
                   'DC_coverage_spatial',
                   'DC_coverage_temporal',
+                  'DC_coverage_temporal_year',
                   'DC_rights',
                   'DC_rights_access',
                   'thesis_degree_name',
@@ -72,6 +75,10 @@ class DocumentSerializer(DynamicFieldsModelSerializer):
             'status_process_document', instance.status_process_document)
         instance.name = validated_data.get('name', instance.name)
         instance.version = validated_data.get('version', instance.version)
+        instance.page_start = validated_data.get(
+            'page_start', instance.page_start)
+        instance.amount_page = validated_data.get(
+            'amount_page', instance.amount_page)
         instance.path = validated_data.get('path', instance.path)
         instance.path = validated_data.get('path_image', instance.path_image)
         instance.DC_title = validated_data.get('DC_title', instance.DC_title)
@@ -99,6 +106,8 @@ class DocumentSerializer(DynamicFieldsModelSerializer):
             'DC_coverage_spatial', instance.DC_coverage_spatial)
         instance.DC_coverage_temporal = validated_data.get(
             'DC_coverage_temporal', instance.DC_coverage_temporal)
+        DC_coverage_temporal_year = validated_data.get(
+            'DC_coverage_temporal_year', instance.DC_coverage_temporal_year)
         instance.DC_rights = validated_data.get(
             'DC_rights', instance.DC_rights)
         instance.DC_rights_access = validated_data.get(
