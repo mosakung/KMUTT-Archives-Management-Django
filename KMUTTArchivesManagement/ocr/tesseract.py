@@ -54,6 +54,12 @@ def setGlobalVariable(fileName):
     PATH_IMAGE = os.path.join(settings.BASE_DIR, 'document-image', fileName)
 
 
+def sortTextOCR(externalBox, widthImage):
+    sortCnt = sorted(
+        externalBox, key=lambda ctr: ctr[0] + ctr[1] * widthImage)
+    return sortCnt
+
+
 def prepareOCR(imagePrepare, page, mydoc=False):
     skipPage = Imp.skipPage(imagePrepare)
     if not skipPage:
@@ -64,7 +70,8 @@ def prepareOCR(imagePrepare, page, mydoc=False):
         fulltext = ''
         if mydoc:
             mydoc.add_heading("Page: "+str(page), 0)
-        for inx, box in enumerate(externalBox):
+        sortExternalBox = sortTextOCR(externalBox, imageRemoveLine.shape[1])
+        for inx, box in enumerate(sortExternalBox):
             imageRotated = Imp.rotated(imageRemoveLine, angleBox, inx, box)
             text = tesseractOcr(imageRotated, page, FILENAME, mydoc)
             if text:
