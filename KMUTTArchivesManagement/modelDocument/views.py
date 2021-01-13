@@ -352,9 +352,8 @@ class DocumentController(
             'DC_description_table_of_contents': self.document.get(
                 'DC_description_table_of_contents'
             ),
-            'DC_description_summary_or_abstract': self.document.get(
-                'DC_description_summary_or_abstract'
-            ),
+            'DC_description_summary': self.document.get('DC_description_summary'),
+            'DC_description_abstract': self.document.get('DC_description_abstract'),
             'DC_description_note': self.document.get('DC_description_note'),
             'DC_format': self.document.get('DC_format'),
             'DC_format_extent': self.document.get('DC_format_extent'),
@@ -378,6 +377,7 @@ class DocumentController(
             'index_issued_date': self.document.get('index_issued_date'),
             'rec_create_by': self.document.get('rec_create_by'),
             'rec_modified_by': self.document.get('rec_create_by'),
+            'rec_status': 1,
         }
         serializer = DocumentSerializer(data=insertData)
         if serializer.is_valid():

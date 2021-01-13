@@ -38,7 +38,8 @@ class DocumentSerializer(DynamicFieldsModelSerializer):
                   'DC_title',
                   'DC_title_alternative',
                   'DC_description_table_of_contents',
-                  'DC_description_summary_or_abstract',
+                  'DC_description_summary',
+                  'DC_description_abstract',
                   'DC_description_note',
                   'DC_format',
                   'DC_format_extent',
@@ -63,7 +64,8 @@ class DocumentSerializer(DynamicFieldsModelSerializer):
                   'index_creator_orgname',
                   'index_publisher',
                   'index_contributor',
-                  'index_issued_date')
+                  'index_issued_date',
+                  'rec_status')
 
     def create(self, validated_data):
         return Document.objects.create(**validated_data)
@@ -86,8 +88,10 @@ class DocumentSerializer(DynamicFieldsModelSerializer):
             'DC_title_alternative', instance.DC_title_alternative)
         instance.DC_description_table_of_contents = validated_data.get(
             'DC_description_table_of_contents', instance.DC_description_table_of_contents)
-        instance.DC_description_summary_or_abstract = validated_data.get(
-            'DC_description_summary_or_abstract', instance.DC_description_summary_or_abstract)
+        instance.DC_description_summary = validated_data.get(
+            'DC_description_summary', instance.DC_description_summary)
+        instance.DC_description_abstract = validated_data.get(
+            'DC_description_abstract', instance.DC_description_abstract)
         instance.DC_description_note = validated_data.get(
             'DC_description_note', instance.DC_description_note)
         instance.DC_format = validated_data.get(
@@ -136,6 +140,8 @@ class DocumentSerializer(DynamicFieldsModelSerializer):
             'index_publisher', instance.index_publisher)
         instance.index_contributor = validated_data.get(
             'index_contributor', instance.index_contributor)
+        instance.rec_status = validated_data.get(
+            'rec_status', instance.rec_status)
         instance.save()
         return instance
 

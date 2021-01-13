@@ -15,7 +15,8 @@ class Document(models.Model):
     DC_title = models.CharField(null=False, max_length=191)
     DC_title_alternative = models.CharField(null=True, max_length=191)
     DC_description_table_of_contents = models.TextField(null=True)
-    DC_description_summary_or_abstract = models.TextField(null=True)
+    DC_description_summary = models.TextField(null=True)
+    DC_description_abstract = models.TextField(null=True)
     DC_description_note = models.TextField(null=True)
     DC_format = models.CharField(null=True, max_length=191)
     DC_format_extent = models.CharField(null=True, max_length=191)
@@ -41,6 +42,7 @@ class Document(models.Model):
     index_publisher = models.IntegerField(null=True, db_index=True)
     index_contributor = models.IntegerField(null=True, db_index=True)
     index_issued_date = models.IntegerField(null=True, db_index=True)
+    rec_status = models.IntegerField(null=False, default=1)
 
     class Meta:
         db_table = "document"
