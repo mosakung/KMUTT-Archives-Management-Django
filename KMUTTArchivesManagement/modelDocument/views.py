@@ -301,6 +301,11 @@ class DocumentController(
     def getPathDicrectory(self):
         return self.document.get('path')
 
+    def getDocumentData(self):
+        row = Document.objects.get(pk=self.documentId)
+        serializer = DocumentSerializer(row)
+        return serializer.data
+
     def getFileName(self):
         filename = self.document.get('name').split('.')[0]
         return filename

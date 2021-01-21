@@ -30,11 +30,9 @@ def API_Add_Document(request):
             filename = documentHelper.getFileName()
             startPage = documentHelper.getStartPageOCR()
             documentHelper.done(documentPK, 1)
-
             ocr(filename, pathToDirectory, startPage)
             documentHelper.done(documentPK, 2)
             documentHelper.updateAmountPage()
-
             perTerm = PerTermController(filename, documentPK)
             perTerm.manage()
             documentHelper.done(documentPK, 3)
