@@ -40,6 +40,7 @@ class Document(models.Model):
     index_creator = models.IntegerField(null=True, db_index=True)
     index_creator_orgname = models.IntegerField(null=True, db_index=True)
     index_publisher = models.IntegerField(null=True, db_index=True)
+    index_publisher_email = models.IntegerField(null=True, db_index=True)
     index_contributor = models.IntegerField(null=True, db_index=True)
     index_issued_date = models.IntegerField(null=True, db_index=True)
     rec_status = models.IntegerField(null=False, default=1)
@@ -86,11 +87,19 @@ class Dc_type(models.Model):
 class Indexing_contributor_document(models.Model):
     indexing_contributor_id = models.AutoField(primary_key=True)
     contributor = models.CharField(null=False, max_length=191)
-    contributor_role = models.CharField(null=True, max_length=191)
     frequency = models.IntegerField(null=False)
 
     class Meta:
         db_table = "indexing_contributor_document"
+
+
+class Indexing_contributor_role_document(models.Model):
+    indexing_contributor_role_id = models.AutoField(primary_key=True)
+    contributor_role = models.CharField(null=False, max_length=191)
+    index_contributor = models.IntegerField(null=False, db_index=True)
+
+    class Meta:
+        db_table = "indexing_contributor_role_document"
 
 # Indexing_creator_document Model
 
@@ -120,12 +129,19 @@ class Indexing_creator_orgname_document(models.Model):
 class Indexing_publisher_document(models.Model):
     indexing_publisher_id = models.AutoField(primary_key=True)
     publisher = models.CharField(null=False, max_length=191)
-    publisher_email = models.CharField(null=True, max_length=191)
     frequency = models.IntegerField(null=False,)
 
     class Meta:
         db_table = "indexing_publisher_document"
 
+
+class Indexing_publisher_email_document(models.Model):
+    indexing_publisher_email_id = models.AutoField(primary_key=True)
+    publisher_email = models.CharField(null=False, max_length=191)
+    frequency = models.IntegerField(null=False,)
+
+    class Meta:
+        db_table = "indexing_publisher_email_document"
 # Indexing_issued_date_document Model
 
 

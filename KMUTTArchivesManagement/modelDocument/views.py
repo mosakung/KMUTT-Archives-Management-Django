@@ -7,15 +7,13 @@ from modelDocument.serializers import *
 
 
 class IndexingContributorController():
-    def __init__(self, contributor, contributor_role, **kwargs):
+    def __init__(self, contributor, **kwargs):
         super().__init__(**kwargs)
         self.contributor = contributor
-        self.contributor_role = contributor_role
 
     def insertFreqContributor(self):
         insertData = {
             'contributor': self.contributor,
-            'contributor_role': self.contributor_role,
             'frequency': 1
         }
         serializer = IndexingContributorDocumentSerializer(data=insertData)
@@ -45,6 +43,36 @@ class IndexingContributorController():
         except Indexing_contributor_document.MultipleObjectsReturned:
             print("EXCEPT : Update Indexing_contributor_document MultipleObjectsReturned")
             return False
+
+
+class IndexingContributorRoleController():
+    def __init__(self, contributor_role, **kwargs):
+        super().__init__(**kwargs)
+        self.contributor_role = contributor_role
+
+    def insertContributorRole(self, index_contributor):
+        insertData = {
+            'contributor_role': self.contributor_role,
+            'index_contributor': index_contributor
+        }
+        serializer = IndexingContributorRoleDocumentSerializer(data=insertData)
+        if serializer.is_valid():
+            serializer.save()
+            return serializer.data
+        print(serializer.errors)
+        return False
+
+    def updateContributorRole(self, index_contributor):
+        contributor = Indexing_contributor_role_document.objects.filter(
+            index_contributor=index_contributor)
+        serializers = IndexingContributorRoleDocumentSerializer(
+            contributor, many=True)
+        permission = True
+        for x in serializers.data:
+            if x['contributor_role'] == self.contributor_role:
+                permission = False
+        if permission:
+            self.insertContributorRole(index_contributor)
 
 
 class IndexingCreatorController():
@@ -127,15 +155,13 @@ class IndexingCreatorOrgnameController():
 
 
 class IndexingPublisherController():
-    def __init__(self, publisher, publisher_email, **kwargs):
+    def __init__(self, publisher, **kwargs):
         super().__init__(**kwargs)
         self.publisher = publisher
-        self.publisher_email = publisher_email
 
     def insertFreqPublisher(self):
         insertData = {
             'publisher': self.creator_orgname,
-            'publisher_email': self.publisher_email,
             'frequency': 1
         }
         serializer = IndexingPublisherDocumentSerializer(data=insertData)
@@ -165,6 +191,46 @@ class IndexingPublisherController():
         except Indexing_publisher_document.MultipleObjectsReturned:
             print(
                 "EXCEPT : Update Indexing_publisher_document MultipleObjectsReturned")
+            return False
+
+
+class IndexingPublisherEmailController():
+    def __init__(self, publisher_email, **kwargs):
+        super().__init__(**kwargs)
+        self.publisher_email = publisher_email
+
+    def insertFreqPublisherEmail(self):
+        insertData = {
+            'publisher_email': self.publisher_email,
+            'frequency': 1
+        }
+        serializer = IndexingPublisherEmailDocumentSerializer(data=insertData)
+        if serializer.is_valid():
+            serializer.save()
+            return serializer.data
+        print(serializer.errors)
+        return False
+
+    def updateFreqPublisherEmail(self):
+        try:
+            publisherEmail = Indexing_publisher_email_document.objects.get(
+                publisher_email=self.publisher_email)
+            insertData = {
+                'publisher_email': publisherEmail.publisher_email,
+                'frequency': publisherEmail.frequency + 1
+            }
+            serializer = IndexingPublisherEmailDocumentSerializer(
+                publisherEmail, data=insertData)
+            if serializer.is_valid():
+                serializer.save()
+                return serializer.data
+            print(serializer.errors)
+            return False
+        except Indexing_publisher_email_document.DoesNotExist:
+            return self.insertFreqPublisherEmail()
+        except Indexing_publisher_email_document.MultipleObjectsReturned:
+            print(
+                "EXCEPT : Update Indexing_publisher_email_document MultipleObjectsReturned")
             return False
 
 
@@ -254,9 +320,11 @@ class DcTypeController():
 
 class DocumentController(
         IndexingContributorController,
+        IndexingContributorRoleController,
         IndexingCreatorController,
         IndexingCreatorOrgnameController,
         IndexingPublisherController,
+        IndexingPublisherEmailController,
         IndexingIssuedDateController,
         DcRelationController,
         DcTypeController,):
@@ -373,6 +441,7 @@ class DocumentController(
             'index_creator': self.document.get('index_creator'),
             'index_creator_orgname': self.document.get('index_creator_orgname'),
             'index_publisher': self.document.get('index_publisher'),
+            'index_publisher_email': self.document.get('index_publisher_email'),
             'index_contributor': self.document.get('index_contributor'),
             'index_issued_date': self.document.get('index_issued_date'),
             'rec_create_by': self.document.get('rec_create_by'),
@@ -394,6 +463,8 @@ class DocumentController(
             result_contributor_row = self.updateFreqContributor()
             index_contributor = result_contributor_row['indexing_contributor_id']
             self.document.update({"index_contributor": index_contributor})
+            if not self.document.get('DC_contributor_role') == None:
+                self.updateContributorRole(index_contributor)
         if not self.document.get('DC_creator') == None:
             result_creator_row = self.updateFreqCreator()
             index_creator = result_creator_row['indexing_creator_id']
@@ -408,6 +479,11 @@ class DocumentController(
             result_publisher_row = self.updateFreqPublisher()
             index_publisher = result_publisher_row['indexing_publisher_id']
             self.document.update({"index_publisher": index_publisher})
+        if not self.document.get('DC_publisher_email') == None:
+            result_publisher_email_row = self.updateFreqPublisherEmail()
+            index_publisher_email = result_publisher_email_row['indexing_publisher_email_id']
+            self.document.update(
+                {"index_publisher_email": index_publisher_email})
         if not self.document.get('DC_issued_date') == None:
             result_issued_dater_row = self.updateFreqIssuedDate()
             index_issued_date = result_issued_dater_row['indexing_issued_date_id']

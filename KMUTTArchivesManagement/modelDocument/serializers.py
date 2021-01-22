@@ -65,6 +65,7 @@ class DocumentSerializer(DynamicFieldsModelSerializer):
                   'index_publisher',
                   'index_contributor',
                   'index_issued_date',
+                  'index_publisher_email',
                   'rec_status')
 
     def create(self, validated_data):
@@ -138,6 +139,8 @@ class DocumentSerializer(DynamicFieldsModelSerializer):
             'index_creator_orgname', instance.index_creator_orgname)
         instance.index_publisher = validated_data.get(
             'index_publisher', instance.index_publisher)
+        instance.index_publisher_email = validated_data.get(
+            'index_publisher_email', instance.index_publisher_email)
         instance.index_contributor = validated_data.get(
             'index_contributor', instance.index_contributor)
         instance.rec_status = validated_data.get(
@@ -214,7 +217,6 @@ class IndexingContributorDocumentSerializer(DynamicFieldsModelSerializer):
         model = Indexing_contributor_document
         fields = ('indexing_contributor_id',
                   'contributor',
-                  'contributor_role',
                   'frequency',)
 
     def create(self, validated_data):
@@ -225,10 +227,29 @@ class IndexingContributorDocumentSerializer(DynamicFieldsModelSerializer):
             'indexing_contributor_id', instance.indexing_contributor_id)
         instance.contributor = validated_data.get(
             'contributor', instance.contributor)
-        instance.contributor_role = validated_data.get(
-            'contributor_role', instance.contributor_role)
         instance.frequency = validated_data.get(
             'frequency', instance.frequency)
+        instance.save()
+        return instance
+
+
+class IndexingContributorRoleDocumentSerializer(DynamicFieldsModelSerializer):
+    class Meta:
+        model = Indexing_contributor_role_document
+        fields = ('indexing_contributor_role_id',
+                  'contributor_role',
+                  'index_contributor',)
+
+    def create(self, validated_data):
+        return Indexing_contributor_role_document.objects.create(**validated_data)
+
+    def update(self, instance, validated_data):
+        instance.indexing_contributor_role_id = validated_data.get(
+            'indexing_contributor_role_id', instance.indexing_contributor_role_id)
+        instance.contributor_role = validated_data.get(
+            'contributor_role', instance.contributor_role)
+        instance.index_contributor = validated_data.get(
+            'index_contributor', instance.index_contributor)
         instance.save()
         return instance
 
@@ -282,7 +303,6 @@ class IndexingPublisherDocumentSerializer(DynamicFieldsModelSerializer):
         model = Indexing_publisher_document
         fields = ('indexing_publisher_id',
                   'publisher',
-                  'publisher_email',
                   'frequency')
 
     def create(self, validated_data):
@@ -293,6 +313,25 @@ class IndexingPublisherDocumentSerializer(DynamicFieldsModelSerializer):
             'indexing_publisher_id', instance.indexing_publisher_id)
         instance.publisher = validated_data.get(
             'publisher', instance.publisher)
+        instance.frequency = validated_data.get(
+            'frequency', instance.frequency)
+        instance.save()
+        return instance
+
+
+class IndexingPublisherEmailDocumentSerializer(DynamicFieldsModelSerializer):
+    class Meta:
+        model = Indexing_publisher_email_document
+        fields = ('indexing_publisher_email_id',
+                  'publisher_email',
+                  'frequency')
+
+    def create(self, validated_data):
+        return Indexing_publisher_email_document.objects.create(**validated_data)
+
+    def update(self, instance, validated_data):
+        instance.indexing_publisher_email_id = validated_data.get(
+            'indexing_publisher_email_id', instance.indexing_publisher_email_id)
         instance.publisher_email = validated_data.get(
             'publisher_email', instance.publisher_email)
         instance.frequency = validated_data.get(
