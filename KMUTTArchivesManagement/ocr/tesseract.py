@@ -85,7 +85,8 @@ def prepareOCR(imagePrepare, page, mydoc=False):
 
 
 def main(fileName, name, startPage):
-    PI.convertPdftoJpg(name, fileName)
+    page = int(startPage)
+    PI.convertPdftoJpg(name, fileName, page)
     setGlobalVariable(fileName)
     Doc.createDirectory(PATH_REPORT)
     Doc.createDirectory(PATH_REPORT+"/"+FILENAME)
@@ -93,7 +94,6 @@ def main(fileName, name, startPage):
     # mydoc = Doc.createDoc(PATH_DOC)
     ####
     poolOCR = cf.ThreadPoolExecutor(max_workers=2)
-    page = int(startPage)
     while(True):
         loopPage = Doc.checkFile(PATH_IMAGE+"/page"+str(page)+".jpg")
         if loopPage:

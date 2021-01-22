@@ -83,7 +83,8 @@ class DocumentSerializer(DynamicFieldsModelSerializer):
         instance.amount_page = validated_data.get(
             'amount_page', instance.amount_page)
         instance.path = validated_data.get('path', instance.path)
-        instance.path = validated_data.get('path_image', instance.path_image)
+        instance.path_image = validated_data.get(
+            'path_image', instance.path_image)
         instance.DC_title = validated_data.get('DC_title', instance.DC_title)
         instance.DC_title_alternative = validated_data.get(
             'DC_title_alternative', instance.DC_title_alternative)

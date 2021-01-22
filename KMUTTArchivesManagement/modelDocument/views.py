@@ -369,6 +369,11 @@ class DocumentController(
     def getPathDicrectory(self):
         return self.document.get('path')
 
+    def getDocumentData(self):
+        row = Document.objects.get(pk=self.documentId)
+        serializer = DocumentSerializer(row)
+        return serializer.data
+
     def getFileName(self):
         filename = self.document.get('name').split('.')[0]
         return filename
@@ -377,7 +382,7 @@ class DocumentController(
         return self.documentId
 
     def getStartPageOCR(self):
-        return self.document.get('startPage')
+        return self.document.get('page_start')
 
     def ask(self):
         DC_title = self.document.get('DC_title')
@@ -504,7 +509,8 @@ class DocumentController(
         return index_documnet
 
     def updateAmountPage(self):
-        pathImage = self.document.get('path_image')
+        pathImage = os.path.abspath(
+            os.getcwd())+"/document-image/"+self.document.get('name').split('.')[0]
         amountPage = len([name for name in os.listdir(pathImage)
                           if os.path.isfile(os.path.join(pathImage, name))])
 
