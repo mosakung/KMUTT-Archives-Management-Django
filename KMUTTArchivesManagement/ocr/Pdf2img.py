@@ -19,9 +19,8 @@ def convertPdftoJpg(pathName, pdfName, startPage):
         print("Already have the directory %s" % path)
     poppler_path = ROOT+"\ocr\poppler-0.68.0\\bin"
     pages = convert_from_path(
-        pathName, dpi=300, poppler_path=poppler_path, size=(2000, None))
+        pathName, dpi=300, poppler_path=poppler_path, size=(2000, None), first_page=startPage, thread_count=2)
     count = startPage
     for index, page in enumerate(pages):
-        if index+1 >= startPage:
-            page.save(path+'/page'+str(count)+'.jpg', fmt='jpg')
-            count = count+1
+        page.save(path+'/page'+str(count)+'.jpg', fmt='jpg')
+        count = count+1

@@ -9,7 +9,7 @@ from PIL import Image
 ### Global variable ###
 
 ROOT = os.path.abspath(os.getcwd())
-PATH_REPORT = ROOT + "/document-report/"
+PATH_REPORT = os.path.join(ROOT, 'document-report')
 REGEX = re.compile(r"[^\u0E00-\u0E7Fa-zA-Z'\d\\/\.\-\s]")
 
 ########################
