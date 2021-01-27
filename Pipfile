@@ -24,6 +24,8 @@ pdf2image = "*"
 scipy = "*"
 python-docx = "*"
 numpy = "1.19.3"
+tqdm = "*"
+ipywidgets = "*"
 
 [requires]
 python_version = "3.7"
