@@ -1,8 +1,26 @@
 from pythainlp.util import isthai
-from pythainlp.spell import correct
+
+from pythainlp.spell import NorvigSpellChecker
+from pythainlp.corpus import ttc
+
 from spellchecker import SpellChecker
 
 spell = SpellChecker()
+corpus = ttc.word_freqs()
+thai = NorvigSpellChecker(custom_dict=corpus)
+
+
+def load_corpus_thai():
+    def readfile():
+        path = "./tokenizer/config/corpus_thai_spellcheck"
+        with open(path, "r", encoding="utf8") as f:
+            return f.read().splitlines()
+
+    corpus_thai = readfile()
+    return corpus_thai
+
+
+corpus_thai = load_corpus_thai()
 
 
 def spellCheckAuto(word):
@@ -16,7 +34,9 @@ def spellCheckAuto(word):
 
     thai = isthai(word)
     if thai:
-        return correct(word)
+        if(word in corpus_thai):
+            return word
+        return thai.correct(word)
     return spell.correction(word)
 
 
