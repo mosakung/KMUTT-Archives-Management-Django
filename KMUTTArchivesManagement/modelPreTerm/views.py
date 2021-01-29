@@ -93,7 +93,7 @@ class PerTermController(PageInDocumentController, PerTermInPageController):
         lock = Lock()
         GLOBAL_POSITION_PROCESS_BAR = {"0": False, "1": False, "2": False}
 
-        def main(filename, fulltext):
+        def main(filename, fulltext, position=0):
 
             if(threading.current_thread().name == "tokenize_process_0"):
                 position = 0
@@ -132,6 +132,7 @@ class PerTermController(PageInDocumentController, PerTermInPageController):
                     # clean token
                     token = list(map(delete_space, token))
                     token = list(map(delete_latin, token))
+                    token = list(map(cleanDot, token))
                     token = list(filter(delete_unnecessary_words, token))
                     token = list(map(to_lower_case, token))
                     # push to corpus
@@ -162,7 +163,6 @@ class PerTermController(PageInDocumentController, PerTermInPageController):
             ) as pbarTokenize:
                 for value in corpusInPage:
                     word = spellCheckAuto(value)
-                    word = cleanDot(word)
                     word = spellCheckSpecific(word, corpusMED)
                     resultCorpusInPage.append(word)
                     pbarTokenize.update()
