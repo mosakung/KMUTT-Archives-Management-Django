@@ -5,14 +5,15 @@ from pythainlp.corpus import ttc
 
 from spellchecker import SpellChecker
 
-spell = SpellChecker()
-corpus = ttc.word_freqs()
-thai = NorvigSpellChecker(custom_dict=corpus)
+SPELL_ENG = SpellChecker()
+# corpus = ttc.word_freqs()
+# SPELL_THAI = NorvigSpellChecker(custom_dict=corpus)
+SPELL_THAI = NorvigSpellChecker()
 
 
 def load_corpus_thai():
     def readfile():
-        path = "./tokenizer/config/corpus_thai_spellcheck"
+        path = "./tokenizer/config/corpus_thai_spellcheck_max"
         with open(path, "r", encoding="utf8") as f:
             return f.read().splitlines()
 
@@ -20,10 +21,16 @@ def load_corpus_thai():
     return corpus_thai
 
 
-corpus_thai = load_corpus_thai()
+CORPUS_THAI = load_corpus_thai()
 
 
 def spellCheckAuto(word):
+    global SPELL_ENG
+    global SPELL_THAI
+    global CORPUS_THAI
+    spellEngPrivate = SPELL_ENG
+    spellThaiPrivate = SPELL_THAI
+    corpusThai = CORPUS_THAI.copy()
     exception = ['ฯ', 'ๆ']
 
     if(word[0].isupper()):
@@ -36,8 +43,8 @@ def spellCheckAuto(word):
     if isThai:
         if(word in corpus_thai):
             return word
-        return thai.correct(word)
-    return spell.correction(word)
+        return spellThaiPrivate.correct(word)
+    return spellEngPrivate.correction(word)
 
 
 def spellCheckSpecific(word, corpus):
