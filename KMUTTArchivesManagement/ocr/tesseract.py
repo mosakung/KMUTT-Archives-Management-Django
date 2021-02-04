@@ -4,12 +4,14 @@ from pytesseract import Output
 import sys
 import os
 import cv2
-import concurrent.futures as cf
+import logging
+from multiprocessing import Pool
 
 import ocr.Pdf2img as PI
 import ocr.document as Doc
 import ocr.imageprocessing as Imp
 from KMUTTArchivesManagement import settings
+
 pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
 
 ### Global variable ###
@@ -19,6 +21,8 @@ ROOT = settings.BASE_DIR
 PATH_IMAGE = os.path.join(settings.BASE_DIR, 'document-image', FILENAME)
 PATH_REPORT = os.path.join(settings.BASE_DIR, 'document-report')
 PATH_DOC = PATH_REPORT + "report-"+FILENAME + ".docx"
+logging.basicConfig(level=logging.DEBUG,
+                    format='(%(processName)-9s) %(message)s',)
 
 
 def CalculateTextConfident(Text):
@@ -60,7 +64,8 @@ def sortTextOCR(externalBox, widthImage):
     return sortCnt
 
 
-def prepareOCR(imagePrepare, page, mydoc=False):
+def prepareOCR(imagePrepare, page, fileName, mydoc=False):
+    # logging.debug('startOCR Page:' + str(page) + 'FileName:' +str(fileName))
     skipPage = Imp.skipPage(imagePrepare)
     if not skipPage:
         # remove picture & line & get angle to rotated
@@ -73,14 +78,14 @@ def prepareOCR(imagePrepare, page, mydoc=False):
         sortExternalBox = sortTextOCR(externalBox, imageRemoveLine.shape[1])
         for inx, box in enumerate(sortExternalBox):
             imageRotated = Imp.rotated(imageRemoveLine, angleBox, inx, box)
-            text = tesseractOcr(imageRotated, page, FILENAME, mydoc)
+            text = tesseractOcr(imageRotated, page, fileName, mydoc)
             if text:
                 fulltext = fulltext + " " + text
                 if mydoc:
                     Doc.addReportDoc(text, imageRotated, mydoc, PATH_DOC)
         # add text to file for TF/IDoc
         Doc.createDirectory(PATH_REPORT)
-        Doc.addReportText(fulltext, page, FILENAME)
+        Doc.addReportText(fulltext, page, fileName)
         return fulltext
 
 
@@ -93,19 +98,22 @@ def main(fileName, name, startPage):
     # report
     # mydoc = Doc.createDoc(PATH_DOC)
     ####
-    poolOCR = cf.ThreadPoolExecutor(max_workers=2)
+    poolOCR = Pool(processes=4)
     while(True):
         loopPage = Doc.checkFile(PATH_IMAGE+"/page"+str(page)+".jpg")
         if loopPage:
             pageStr = os.path.join(PATH_IMAGE, 'page'+str(page)+'.jpg')
             image = cv2.imread(pageStr)
             imagePrepare = image.copy()
-            poolOCR.submit(prepareOCR, imagePrepare, page)
+            poolOCR.apply_async(prepareOCR, args=(
+                imagePrepare, page, fileName, ))
             # prepareOCR(imagePrepare, page)
             page += 1
         else:
+            poolOCR.close()
+            poolOCR.join()
             break
-    poolOCR.shutdown(wait=True)
+    print('FinishOCR: ', fileName)
 
 
 # Handle Ctrl-C Interrupt

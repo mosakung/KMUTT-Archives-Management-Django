@@ -32,8 +32,8 @@ def spellCheckAuto(word):
     if (word in exception):
         return word
 
-    thai = isthai(word)
-    if thai:
+    isThai = isthai(word)
+    if isThai:
         if(word in corpus_thai):
             return word
         return thai.correct(word)
