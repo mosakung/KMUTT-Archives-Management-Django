@@ -96,12 +96,11 @@ class PerTermController(PageInDocumentController, PerTermInPageController):
         GLOBAL_POSITION_PROCESS_BAR = {"0": False, "1": False, "2": False}
 
         for filename, fulltext in directory.items():
-            pool.apply_async(pipeLineTokenizer, args=(filename, fulltext, ),
-                             callback=pageSet.append)
+            pipeLine = pool.apply_async(pipeLineTokenizer, args=(filename, fulltext, ),
+                                        callback=pageSet.append)
 
         pool.close()
         pool.join()
-
         # for filename, fulltext in directory.items():
         #     main(filename, fulltext)
         for page in pageSet:

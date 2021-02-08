@@ -1,14 +1,19 @@
+from threading import Lock
+import threading
+from multiprocessing import Pool, current_process, Manager
 from tokenizer.stopword import filterStopword
 from tokenizer.lemmatizer import *
+import re
 from itertools import repeat
 from tokenizer.loadConfig import loadSpecific
 from tokenizer.normalize import *
 from tokenizer.spellCheck import *
 from tokenizer.cleanToken import *
+import concurrent.futures as cf
 from tqdm import tqdm
+from threading import Thread
 from tokenizer.read import *
 from tokenizer.deepcut import deepcut
-from multiprocessing import Pool, current_process
 import tensorflow as tf
 
 
@@ -57,7 +62,7 @@ def pipeLineTokenizer(filename, fulltext):
         ascii=True,
         ncols=130,
         leave=False,
-        disable=True,
+        disable=False,
     ) as pbarDeepcut:
         for line in fulltext:
             # Deep Cut process
@@ -91,7 +96,7 @@ def pipeLineTokenizer(filename, fulltext):
         ascii=True,
         ncols=130,
         leave=True,
-        disable=True,
+        disable=False,
     ) as pbarTokenize:
         for value in corpusInPage:
             word = spellCheckAuto(value)

@@ -41,7 +41,7 @@ def spellCheckAuto(word):
 
     isThai = isthai(word)
     if isThai:
-        if(word in corpus_thai):
+        if(word in corpusThai):
             return word
         return spellThaiPrivate.correct(word)
     return spellEngPrivate.correction(word)
