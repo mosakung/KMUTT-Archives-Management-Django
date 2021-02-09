@@ -22,6 +22,9 @@ import tensorflow as tf
 from modelPreTerm.models import *
 from modelPreTerm.serializers import *
 
+from modelDocument.models import *
+from modelDocument.serializers import *
+
 
 class PageInDocumentController():
     def __init__(self, index_document, **kwargs):
@@ -123,6 +126,11 @@ class PerTermRepository(PageInDocumentController, PerTermInPageController):
             index_document=self.pkDocument
         )
 
+    def getDocument(self, documentId):
+        row = Document.objects.get(pk=documentId)
+        serializer = DocumentSerializer(row)
+        return serializer.data
+
     def query(self):
         result = []
         pages = self.queryPage()
@@ -135,5 +143,9 @@ class PerTermRepository(PageInDocumentController, PerTermInPageController):
             result.extend(term)
 
         result = list(filter(filterStopword, result))
+
+        documentInformation = self.getDocument(self.pkDocument)
+        documentTitle = documentInformation.get('DC_title')
+        result.append(documentTitle)
 
         return result
