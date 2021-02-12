@@ -94,15 +94,11 @@ class PerTermController(PageInDocumentController, PerTermInPageController):
         directory = readDirectory(self.pathToDirectory)
         pool = Pool(processes=3)
         GLOBAL_POSITION_PROCESS_BAR = {"0": False, "1": False, "2": False}
-
         for filename, fulltext in directory.items():
             pipeLine = pool.apply_async(pipeLineTokenizer, args=(filename, fulltext, ),
                                         callback=pageSet.append)
-
         pool.close()
         pool.join()
-        # for filename, fulltext in directory.items():
-        #     main(filename, fulltext)
         for page in pageSet:
             keys = page.get('rawKeywords')
             filename = page.get('filename')
