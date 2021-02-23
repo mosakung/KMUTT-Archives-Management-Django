@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
+import os
 import concurrent.futures as cf
 from pathlib import Path
 
@@ -85,14 +86,11 @@ WSGI_APPLICATION = 'KMUTTArchivesManagement.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'kmutt-archives-management',
-        'USER': 'root',
-        'PASSWORD': 'root',
-        'HOST': '127.0.0.1',
-        'PORT': '3306',
+        'OPTIONS': {
+            'read_default_file': os.path.join(BASE_DIR, 'initializingDB.cnf'),
+        }
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators

@@ -107,12 +107,18 @@ celerybeat.pid
 
 # Environments
 .env
+.env.development
 .venv
 env/
 venv/
 ENV/
 env.bak/
 venv.bak/
+.vscode
+.vscode2
+
+# database Environments
+initializingDB.cnf
 
 # Spyder project settings
 .spyderproject

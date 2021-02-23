@@ -1,4 +1,8 @@
 {
+<<<<<<< Updated upstream
     "python.pythonPath": "C:\\Users\\akara\\.virtualenvs\\KMUTT-Archives-Management-Django-BWHvzErs\\Scripts\\python.exe",
+=======
+    "python.pythonPath": "C:\\Users\\BearSouL\\.virtualenvs\\KMUTT-Archives-Management-Django-iXimHbdk\\Scripts\\python.exe",
+>>>>>>> Stashed changes
     "editor.formatOnSave": true
 }
