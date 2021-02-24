@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
+import gensim
 import os
 import concurrent.futures as cf
 from pathlib import Path
@@ -136,6 +137,11 @@ CORS_ORIGIN_WHITELIST = (
     'http://localhost:3251',
 )
 
-
+# Thread Pool Que
 SLOW_POOL = cf.ThreadPoolExecutor(max_workers=1)
 FAST_POOL = cf.ThreadPoolExecutor(max_workers=1)
+
+# Word2Vec init model
+MODEL_WORD2VEC = gensim.models.Word2Vec.load(
+    os.path.join(BASE_DIR, 'word2vec/corpus.en.model')
+)
