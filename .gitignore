@@ -143,4 +143,4 @@ dmypy.json
 /KMUTTArchivesManagement/document-image/**
 /KMUTTArchivesManagement/document-pdf/**
 /KMUTTArchivesManagement/document-report/**
-.vscode
+/.vscode
