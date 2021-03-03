@@ -10,6 +10,8 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
+import gensim
+import os
 import concurrent.futures as cf
 from pathlib import Path
 
@@ -85,14 +87,11 @@ WSGI_APPLICATION = 'KMUTTArchivesManagement.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'kmutt-archives-management',
-        'USER': 'root',
-        'PASSWORD': 'root',
-        'HOST': '127.0.0.1',
-        'PORT': '3306',
+        'OPTIONS': {
+            'read_default_file': os.path.join(BASE_DIR, 'initializingDB.cnf'),
+        }
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
@@ -138,6 +137,11 @@ CORS_ORIGIN_WHITELIST = (
     'http://localhost:3251',
 )
 
-
+# Thread Pool Que
 SLOW_POOL = cf.ThreadPoolExecutor(max_workers=1)
 FAST_POOL = cf.ThreadPoolExecutor(max_workers=1)
+
+# Word2Vec init model
+MODEL_WORD2VEC = gensim.models.Word2Vec.load(
+    os.path.join(BASE_DIR, 'word2vec/corpus.en.model')
+)

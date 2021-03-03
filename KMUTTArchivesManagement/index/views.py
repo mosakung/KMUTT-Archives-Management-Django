@@ -116,6 +116,28 @@ def API_Deepcut(request):
                 print(e)
         tokens = deepcut(fulltext)
 
+        similarTokens = []
+        for token in tokens:
+            if(token != ' ' and token != ''):
+                try:
+                    similar = settings.MODEL_WORD2VEC.wv.similar_by_word(token)
+                    resultSimilar = []
+                    for sml in similar:
+                        resultSimilar.append({
+                            'token': sml[0],
+                            'score': sml[1]
+                        })
+                    similarTokens.append({
+                        'key': token,
+                        'value': resultSimilar
+                    })
+                except KeyError:
+                    similarTokens.append({
+                        'key': token,
+                        'value': []
+                    })
+
         return JsonResponse({
             'tokens': tokens,
+            'similarTokens': similarTokens,
         })

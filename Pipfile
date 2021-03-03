@@ -27,6 +27,7 @@ numpy = "==1.19.3"
 tqdm = "*"
 ipywidgets = "*"
 matplotlib = "*"
+gensim = "*"
 
 [requires]
 python_version = "3.7"

@@ -93,7 +93,7 @@ class TermwordController():
 
     def patch_IDF_score(self, pkTerms):
         N = Document.objects.filter(
-            status_process_document=5
+            Q(status_process_document=5) | Q(status_process_document=6)
         ).count() + 1
 
         for pk in pkTerms:
