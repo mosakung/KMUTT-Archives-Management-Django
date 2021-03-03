@@ -23,9 +23,10 @@ opencv-python = "*"
 pdf2image = "*"
 scipy = "*"
 python-docx = "*"
-numpy = "1.19.3"
+numpy = "==1.19.3"
 tqdm = "*"
 ipywidgets = "*"
+matplotlib = "*"
 
 [requires]
 python_version = "3.7"

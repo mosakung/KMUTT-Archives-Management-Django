@@ -140,8 +140,4 @@ class PerTermRepository(PageInDocumentController, PerTermInPageController):
 
         result = list(filter(filterStopword, result))
 
-        documentInformation = self.getDocument(self.pkDocument)
-        documentTitle = documentInformation.get('DC_title')
-        result.append(documentTitle)
-
         return result

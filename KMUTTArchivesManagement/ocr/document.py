@@ -44,12 +44,13 @@ def createDoc(path):
     else:
         mydoc = docx.Document(path)
         print("Successfully open the file %s" % path)
-    mydoc.save(path)
+    # mydoc.save(path)
     return mydoc
 
 
-def addReportDocText(text, doc):
-    text = "Full text:"+text
+def addReportDocText(text, doc, clean=False):
+    if not clean:
+        text = "Full text:"+text
     doc.add_paragraph(text)
 
 
@@ -59,12 +60,29 @@ def addReportDocPicture(picture, doc):
     bytesImage = BytesIO()
     image.save(bytesImage, format="PNG")
     # insert picture in to doc
-    doc.add_picture(bytesImage, width=docx.shared.Inches(3))
+    doc.add_picture(bytesImage, width=docx.shared.Inches(2))
 
 
-def addReportDoc(text, picture, doc, path):
-    addReportDocText(text, doc)
-    addReportDocPicture(picture, doc)
+def saveTempImg(picture):
+    image = Image.fromarray(picture)
+    bytesImage = BytesIO()
+    image.save(bytesImage, format="PNG")
+    return bytesImage
+
+
+def addReportDoc(arrayPicture, arrayText, arrayCleanText, path):
+    if len(arrayText) != len(arrayPicture):
+        logging.info(
+            "length between arrayText and arrayPicture is not equal!!!!!!! path: "+path)
+        print('length between arrayText and arrayPicture is not equal!!!!!!!')
+        return
+    doc = createDoc(path)
+    for inx in range(len(arrayText)):
+        addReportDocPicture(arrayPicture[inx], doc)
+        addReportDocText(arrayText[inx], doc)
+        doc.add_paragraph('Clean text:')
+        # for text in arrayCleanText[inx]:
+        addReportDocText(arrayCleanText[inx], doc, True)
     doc.save(path)
 
 

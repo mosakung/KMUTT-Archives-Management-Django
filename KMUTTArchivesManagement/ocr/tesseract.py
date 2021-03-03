@@ -1,13 +1,14 @@
+import cv2
+import os
+import sys
 import numpy as np
+from multiprocessing import Pool
 import pytesseract
 from pytesseract import Output
-import sys
-import os
-import cv2
 import logging
-from multiprocessing import Pool
+import re
 
-import ocr.Pdf2img as PI
+import ocr.Pdf2img as P2i
 import ocr.document as Doc
 import ocr.imageprocessing as Imp
 from KMUTTArchivesManagement import settings
@@ -15,47 +16,10 @@ from KMUTTArchivesManagement import settings
 pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
 
 ### Global variable ###
-
-FILENAME = ""
-ROOT = settings.BASE_DIR
-PATH_IMAGE = os.path.join(settings.BASE_DIR, 'document-image', FILENAME)
-PATH_REPORT = os.path.join(settings.BASE_DIR, 'document-report')
-PATH_DOC = PATH_REPORT + "report-"+FILENAME + ".docx"
+ROOT = os.path.abspath(os.getcwd())
+PATH_REPORT = os.path.join(ROOT, 'document-report')
 logging.basicConfig(level=logging.DEBUG,
                     format='(%(processName)-9s) %(message)s',)
-
-
-def CalculateTextConfident(Text):
-    textConcat = ''
-    for i in range(len(Text['text'])):
-        if int(Text['conf'][i]) >= 35:
-            textConcat = textConcat+Text['text'][i]
-    return textConcat
-
-
-def tesseractOcr(picture, page, reportName, reportDoc=False):
-    imageOCR = cv2.cvtColor(picture, cv2.COLOR_BGR2GRAY)
-    custom_config = r'--oem 1'
-    config = custom_config
-    # textconfident = pytesseract.image_to_data(
-    # imageOCR, lang = 'tha+eng', output_type = Output.DICT, config = custom_config)
-    # textcon = CalculateTextConfident(textconfident)
-    text = pytesseract.image_to_string(
-        imageOCR, lang='tha+eng', config=custom_config)
-    # for add context docx to check error
-    cleanText = Doc.cleanTextRegex(text)
-    if cleanText:
-        return cleanText
-    return False
-
-
-def setGlobalVariable(fileName):
-    global FILENAME
-    global PATH_IMAGE
-    global PATH_DOC
-    FILENAME = fileName
-    PATH_DOC = PATH_REPORT + "report-"+FILENAME + ".docx"
-    PATH_IMAGE = os.path.join(settings.BASE_DIR, 'document-image', fileName)
 
 
 def sortTextOCR(externalBox, widthImage):
@@ -64,55 +28,63 @@ def sortTextOCR(externalBox, widthImage):
     return sortCnt
 
 
-def prepareOCR(imagePrepare, page, fileName, mydoc=False):
-    # logging.debug('startOCR Page:' + str(page) + 'FileName:' +str(fileName))
-    skipPage = Imp.skipPage(imagePrepare)
-    if not skipPage:
-        # remove picture & line & get angle to rotated
-        imageOnlyText, angleBox, externalBox = Imp.prepareRotated(imagePrepare)
-        imageRemoveLine = Imp.removeLine(imageOnlyText)
-        # rotated & OCR image
-        fulltext = ''
-        if mydoc:
-            mydoc.add_heading("Page: "+str(page), 0)
-        sortExternalBox = sortTextOCR(externalBox, imageRemoveLine.shape[1])
-        for inx, box in enumerate(sortExternalBox):
-            imageRotated = Imp.rotated(imageRemoveLine, angleBox, inx, box)
-            text = tesseractOcr(imageRotated, page, fileName, mydoc)
-            if text:
-                fulltext = fulltext + " " + text
-                if mydoc:
-                    Doc.addReportDoc(text, imageRotated, mydoc, PATH_DOC)
-        # add text to file for TF/IDoc
-        Doc.createDirectory(PATH_REPORT)
-        Doc.addReportText(fulltext, page, fileName)
-        return fulltext
+def listDirectory(path):
+    listDir = False
+    try:
+        listDir = [os.path.join(path, f)
+                   for f in os.listdir(path) if f.endswith(".jpg")]
+    except OSError:
+        print("Error: path Error maybe wrong name!!!!")
+    return listDir
+
+
+def tesseractOcr(picture):
+    custom_config = r'--oem 1'
+    config = custom_config
+    text = pytesseract.image_to_string(
+        picture, lang='tha+eng', config=custom_config)
+    # for add context docx to check error
+    cleanText = Doc.cleanTextRegex(text)
+    if cleanText:
+        return cleanText
+    return False
+
+
+def pipelineOCR(image, page, fileName):
+    imageText = Imp.removeBG(image)
+    cnts = Imp.findContours(imageText)
+    boundaryBox = []
+    for cnt in cnts:
+        boundaryBox.append(cv2.boundingRect(cnt))
+    sortCnts = sortTextOCR(boundaryBox, image.shape[1])
+    imageText = cv2.bitwise_not(imageText)
+    # imageRepair = repairImage(imageText)
+    fulltext = ''
+    for inx, box in enumerate(sortCnts):
+        x, y, w, h = box
+        if h < TEXT_MIN_HEIGHT or w < TEXT_MIN_WIDTH:
+            pass
+        # repairOCR = imageRepair[y:y+h, x:x+w].copy()
+        cropToOCR = imageText[y:y+h, x:x+w].copy()
+        text = tesseractOcr(cropToOCR)
+        if text:
+            fulltext = fulltext + " " + text
+    Doc.addReportText(fulltext, page, fileName)
 
 
 def main(fileName, name, startPage):
     page = int(startPage)
-    PI.convertPdftoJpg(name, fileName, page)
-    setGlobalVariable(fileName)
+    path = P2i.convertPdftoJpg(name, filename, page)
     Doc.createDirectory(PATH_REPORT)
-    Doc.createDirectory(PATH_REPORT+"/"+FILENAME)
-    # report
-    # mydoc = Doc.createDoc(PATH_DOC)
-    ####
+    Doc.createDirectory(PATH_REPORT+"/"+filename)
     poolOCR = Pool(processes=4)
-    while(True):
-        loopPage = Doc.checkFile(PATH_IMAGE+"/page"+str(page)+".jpg")
-        if loopPage:
-            pageStr = os.path.join(PATH_IMAGE, 'page'+str(page)+'.jpg')
-            image = cv2.imread(pageStr)
-            imagePrepare = image.copy()
-            poolOCR.apply_async(prepareOCR, args=(
-                imagePrepare, page, fileName, ))
-            # prepareOCR(imagePrepare, page)
-            page += 1
-        else:
-            poolOCR.close()
-            poolOCR.join()
-            break
+    listPathImage = listDirectory(path)
+    for pathImage in listPathImage:
+        pageNumber = re.search('page(.*).jpg', pathImage).group(1)
+        image = cv2.imread(pathImage)
+        poolOCR.apply_async(pipelineOCR, args=(image, pageNumber, filename, ))
+    poolOCR.close()
+    poolOCR.join()
     print('FinishOCR: ', fileName)
 
 
