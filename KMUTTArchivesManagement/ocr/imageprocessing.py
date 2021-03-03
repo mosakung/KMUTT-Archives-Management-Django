@@ -1,20 +1,10 @@
 import numpy as np
 import math
 import cv2
-from matplotlib import pyplot as plt
-
-
-def histogram(gray):
-    hist = cv2.calcHist([gray], [0], None, [256], [0, 256])
-    plt.plot(hist, color='k')
-    plt.xlim([0, 256])
-    plt.show()
-
 
 def countHistogram(gray):
     (unique, counts) = np.unique(gray, return_counts=True)
     print(np.asarray((unique, counts)))
-
 
 def removeBG(picture):
     gray = cv2.cvtColor(picture, cv2.COLOR_BGR2GRAY)
