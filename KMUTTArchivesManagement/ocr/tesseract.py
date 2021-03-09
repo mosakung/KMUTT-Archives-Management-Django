@@ -21,6 +21,11 @@ PATH_REPORT = os.path.join(ROOT, 'document-report')
 logging.basicConfig(level=logging.DEBUG,
                     format='(%(processName)-9s) %(message)s',)
 
+TEXT_MIN_WIDTH = 15      # min reduced px width of detected text contour
+TEXT_MIN_HEIGHT = 2      # min reduced px height of detected text contour
+TEXT_MIN_ASPECT = 1.5    # filter out text contours below this w/h ratio
+TEXT_MAX_THICKNESS = 10  # max reduced px thickness of detected text contour
+TEXT_MAX_HEIGHT = 100 
 
 def sortTextOCR(externalBox, widthImage):
     sortCnt = sorted(
@@ -74,15 +79,15 @@ def pipelineOCR(image, page, fileName):
 
 def main(fileName, name, startPage):
     page = int(startPage)
-    path = P2i.convertPdftoJpg(name, filename, page)
+    path = P2i.convertPdftoJpg(name, fileName, page)
     Doc.createDirectory(PATH_REPORT)
-    Doc.createDirectory(PATH_REPORT+"/"+filename)
+    Doc.createDirectory(PATH_REPORT+"/"+fileName)
     poolOCR = Pool(processes=4)
     listPathImage = listDirectory(path)
     for pathImage in listPathImage:
         pageNumber = re.search('page(.*).jpg', pathImage).group(1)
         image = cv2.imread(pathImage)
-        poolOCR.apply_async(pipelineOCR, args=(image, pageNumber, filename, ))
+        poolOCR.apply_async(pipelineOCR, args=(image, pageNumber, fileName, ))
     poolOCR.close()
     poolOCR.join()
     print('FinishOCR: ', fileName)
