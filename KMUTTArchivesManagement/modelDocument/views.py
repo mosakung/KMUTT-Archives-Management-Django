@@ -161,7 +161,7 @@ class IndexingPublisherController():
 
     def insertFreqPublisher(self):
         insertData = {
-            'publisher': self.creator_orgname,
+            'publisher': self.publisher,
             'frequency': 1
         }
         serializer = IndexingPublisherDocumentSerializer(data=insertData)

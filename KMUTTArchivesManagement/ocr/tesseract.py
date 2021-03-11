@@ -82,7 +82,7 @@ def main(fileName, name, startPage):
     path = P2i.convertPdftoJpg(name, fileName, page)
     Doc.createDirectory(PATH_REPORT)
     Doc.createDirectory(PATH_REPORT+"/"+fileName)
-    poolOCR = Pool(processes=4)
+    poolOCR = Pool(processes=3)
     listPathImage = listDirectory(path)
     for pathImage in listPathImage:
         pageNumber = re.search('page(.*).jpg', pathImage).group(1)
