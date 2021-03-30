@@ -63,7 +63,6 @@ class DocumentSerializer(DynamicFieldsModelSerializer):
                   'index_creator',
                   'index_creator_orgname',
                   'index_publisher',
-                  'index_contributor',
                   'index_issued_date',
                   'index_publisher_email',
                   'rec_status')
@@ -143,8 +142,6 @@ class DocumentSerializer(DynamicFieldsModelSerializer):
         instance.index_publisher_email = validated_data.get(
             'index_publisher_email', instance.index_publisher_email)
         instance.index_contributor = validated_data.get(
-            'index_contributor', instance.index_contributor)
-        instance.rec_status = validated_data.get(
             'rec_status', instance.rec_status)
         instance.save()
         return instance
@@ -165,6 +162,27 @@ class DcKeywordSerializer(DynamicFieldsModelSerializer):
             'DC_keyword_id', instance.DC_keyword_id)
         instance.DC_keyword = validated_data.get(
             'DC_keyword', instance.DC_keyword)
+        instance.index_document_id = validated_data.get(
+            'index_document_id', instance.index_document_id)
+        instance.save()
+        return instance
+
+
+class DcContributorsSerializer(DynamicFieldsModelSerializer):
+    class Meta:
+        model = Dc_contributors
+        fields = ('DC_contributors_id',
+                  'index_contributor_id',
+                  'index_document_id')
+
+    def create(self, validated_data):
+        return Dc_contributors.objects.create(**validated_data)
+
+    def update(self, instance, validated_data):
+        instance.DC_contributors_id = validated_data.get(
+            'DC_contributors_id', instance.DC_contributors_id)
+        instance.index_contributor_id = validated_data.get(
+            'index_contributor_id', instance.index_contributor_id)
         instance.index_document_id = validated_data.get(
             'index_document_id', instance.index_document_id)
         instance.save()

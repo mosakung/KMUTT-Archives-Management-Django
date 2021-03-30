@@ -116,28 +116,36 @@ def API_Deepcut(request):
                 print(e)
         tokens = deepcut(fulltext)
 
+        tokensClean = list(filter(
+            lambda token: token != ' ' and token != '', tokens
+        ))
+
+        uniqueTokens = []
+        for token in tokensClean:
+            if not (token in uniqueTokens):
+                uniqueTokens.append(token)
+
         similarTokens = []
-        for token in tokens:
-            if(token != ' ' and token != ''):
-                try:
-                    similar = settings.MODEL_WORD2VEC.wv.similar_by_word(token)
-                    resultSimilar = []
-                    for sml in similar:
-                        resultSimilar.append({
-                            'token': sml[0],
-                            'score': sml[1]
-                        })
-                    similarTokens.append({
-                        'key': token,
-                        'value': resultSimilar
+        for token in uniqueTokens:
+            try:
+                similar = settings.MODEL_WORD2VEC.wv.similar_by_word(token)
+                resultSimilar = []
+                for sml in similar:
+                    resultSimilar.append({
+                        'token': sml[0],
+                        'score': sml[1]
                     })
-                except KeyError:
-                    similarTokens.append({
-                        'key': token,
-                        'value': []
-                    })
+                similarTokens.append({
+                    'key': token,
+                    'value': resultSimilar
+                })
+            except KeyError:
+                similarTokens.append({
+                    'key': token,
+                    'value': []
+                })
 
         return JsonResponse({
-            'tokens': tokens,
+            'tokens': uniqueTokens,
             'similarTokens': similarTokens,
         })

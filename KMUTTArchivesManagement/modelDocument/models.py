@@ -41,7 +41,6 @@ class Document(models.Model):
     index_creator_orgname = models.IntegerField(null=True, db_index=True)
     index_publisher = models.IntegerField(null=True, db_index=True)
     index_publisher_email = models.IntegerField(null=True, db_index=True)
-    index_contributor = models.IntegerField(null=True, db_index=True)
     index_issued_date = models.IntegerField(null=True, db_index=True)
     rec_status = models.IntegerField(null=False, default=1)
 
@@ -59,6 +58,16 @@ class Dc_keyword(models.Model):
     class Meta:
         db_table = "dc_keyword"
 
+# Dc_contributors Model
+
+
+class Dc_contributors(models.Model):
+    DC_contributors_id = models.AutoField(primary_key=True)
+    index_contributor_id = models.IntegerField(null=True, db_index=True)
+    index_document_id = models.IntegerField(null=False, db_index=True)
+
+    class Meta:
+        db_table = "dc_contributors"
 # Dc_relation Model
 
 
