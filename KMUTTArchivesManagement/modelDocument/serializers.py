@@ -173,6 +173,7 @@ class DcContributorsSerializer(DynamicFieldsModelSerializer):
         model = Dc_contributors
         fields = ('DC_contributors_id',
                   'index_contributor_id',
+                  'index_contributor_role_id',
                   'index_document_id')
 
     def create(self, validated_data):
@@ -180,11 +181,17 @@ class DcContributorsSerializer(DynamicFieldsModelSerializer):
 
     def update(self, instance, validated_data):
         instance.DC_contributors_id = validated_data.get(
-            'DC_contributors_id', instance.DC_contributors_id)
+            'DC_contributors_id', instance.DC_contributors_id
+        )
         instance.index_contributor_id = validated_data.get(
-            'index_contributor_id', instance.index_contributor_id)
+            'index_contributor_id', instance.index_contributor_id
+        )
+        instance.index_contributor_role_id = validated_data.get(
+            'index_contributor_role_id', instance.index_contributor_role_id
+        )
         instance.index_document_id = validated_data.get(
-            'index_document_id', instance.index_document_id)
+            'index_document_id', instance.index_document_id
+        )
         instance.save()
         return instance
 

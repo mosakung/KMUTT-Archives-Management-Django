@@ -67,12 +67,11 @@ class IndexingContributorRoleController():
             index_contributor=index_contributor)
         serializers = IndexingContributorRoleDocumentSerializer(
             contributor, many=True)
-        permission = True
-        for x in serializers.data:
-            if x['contributor_role'] == self.contributor_role[indexRoleInput]:
-                permission = False
-        if permission:
-            self.insertContributorRole(index_contributor, indexRoleInput)
+        for row in serializers.data:
+            if row['contributor_role'] == self.contributor_role[indexRoleInput]:
+                return row
+
+        return self.insertContributorRole(index_contributor, indexRoleInput)
 
 
 class IndexingCreatorController():
@@ -278,9 +277,10 @@ class DcContributorsController():
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-    def insertDcContributors(self, indexContributor, indexDocument):
+    def insertDcContributors(self, indexContributor, indexContributorRole, indexDocument):
         insertData = {
             'index_contributor_id': indexContributor,
+            'index_contributor_role_id': indexContributorRole,
             'index_document_id': indexDocument
         }
         serializer = DcContributorsSerializer(data=insertData)
@@ -510,17 +510,18 @@ class DocumentController(
         result_document_row = self.insertDocument()
         index_documnet = result_document_row['document_id']
 
-        print("hello >>>>>>>>>>>>>>>>>>>>>>>>>>",
-              self.document.get('DC_contributor'))
         if not self.document.get('DC_contributor') == None:
             for index, element in enumerate(self.document.get('DC_contributor')):
-                print("hello >>>>>>>>>>>>>>>>>>>>>>>>>>", index)
                 result_contributor_row = self.updateFreqContributor(index)
-                print("hello >>>>>>>>>>>>>>>>>>>>>>>>>>", result_contributor_row)
                 index_contributor = result_contributor_row['indexing_contributor_id']
                 if not self.document.get('DC_contributor_role') == None:
-                    self.updateContributorRole(index_contributor, index)
-                self.insertDcContributors(index_contributor, index_documnet)
+                    result_contributor_role_row = self.updateContributorRole(
+                        index_contributor, index
+                    )
+                    index_contributor_role = result_contributor_role_row['indexing_contributor_role_id']
+                self.insertDcContributors(
+                    index_contributor, index_contributor_role, index_documnet
+                )
 
         if not self.document.get('DC_relation') == None:
             self.insertDcRelation(index_documnet)

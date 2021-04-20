@@ -63,7 +63,8 @@ class Dc_keyword(models.Model):
 
 class Dc_contributors(models.Model):
     DC_contributors_id = models.AutoField(primary_key=True)
-    index_contributor_id = models.IntegerField(null=True, db_index=True)
+    index_contributor_id = models.IntegerField(null=False, db_index=True)
+    index_contributor_role_id = models.IntegerField(null=False, db_index=True)
     index_document_id = models.IntegerField(null=False, db_index=True)
 
     class Meta:
