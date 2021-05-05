@@ -10,6 +10,7 @@ import tensorflow as tf
 from modelUser.views import UserController
 from modelDocument.views import DocumentController
 from modelDocument.views import getDocumentStatus
+from modelDocument.views import updateStatus
 from modelPreTerm.views import PerTermController
 from modelPreTerm.views import PerTermRepository
 from modelTerm.views import TfIdf
@@ -75,7 +76,6 @@ def API_INIT_TF(request):
             repo = PerTermRepository(documentIndex)
             terms = repo.query()
             tfidfHelper = TfIdf(terms, documentIndex)
-            tfidfHelper.done(4)
             tfidfHelper.manage()
             tfidfHelper.done(5)
             print("<END PROCESS> init TF-IDF Document (", documentIndex, ")")
@@ -83,6 +83,7 @@ def API_INIT_TF(request):
 
         if statusDocument == 3:
             # main(pkDocument)
+            updateStatus(pkDocument, 4)
             settings.FAST_POOL.submit(main, pkDocument)
         else:
             return JsonResponse({

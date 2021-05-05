@@ -25,6 +25,19 @@ from modelPreTerm.serializers import *
 from modelDocument.models import *
 from modelDocument.serializers import *
 
+import logging
+
+logging.basicConfig(level=logging.INFO,
+                    format='%(asctime)s %(name)-12s %(processName)-8s %(message)s',
+                    datefmt='%d-%m-%y %H:%M',
+                    filename='F:\Ty\project kmutt\KMUTT-Archives-Management-Django\KMUTTArchivesManagement\processLog.log',
+                    filemode='a')
+console = logging.StreamHandler()
+console.setLevel(logging.INFO)
+formatter = logging.Formatter('%(processName)-12s: %(message)s')
+console.setFormatter(formatter)
+logging.getLogger('').addHandler(console)
+
 
 class PageInDocumentController():
     def __init__(self, index_document, **kwargs):
@@ -96,8 +109,9 @@ class PerTermController(PageInDocumentController, PerTermInPageController):
         pageSet = []
         directory = readDirectory(self.pathToDirectory)
         pool = Pool(processes=3)
-        GLOBAL_POSITION_PROCESS_BAR = {"0": False, "1": False, "2": False}
+        # GLOBAL_POSITION_PROCESS_BAR = {"0": False, "1": False, "2": False}
         for filename, fulltext in directory.items():
+            logging.info("PipeLineTokenizer FileName: " + str(filename) + " start")
             pipeLine = pool.apply_async(pipeLineTokenizer, args=(filename, fulltext, ),
                                         callback=pageSet.append)
         pool.close()
@@ -106,12 +120,10 @@ class PerTermController(PageInDocumentController, PerTermInPageController):
             keys = page.get('rawKeywords')
             filename = page.get('filename')
             pageIndex = page.get('pageIndex')
-
             # Lemmatizer
             keys = list(map(lemmatizer, keys))
             pkPage = self.insertPage(filename, pageIndex)
-            self.insertKeywords(keys, pkPage)
-
+            self.insertKeywords(keys, pkPage)   
 
 class PerTermRepository(PageInDocumentController, PerTermInPageController):
 

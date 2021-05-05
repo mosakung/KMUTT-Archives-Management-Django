@@ -21,13 +21,14 @@ shapely = "*"
 pytesseract = "*"
 opencv-python = "*"
 pdf2image = "*"
-scipy = "*"
 python-docx = "*"
-numpy = "==1.19.3"
+scipy = "*"
+numpy = "==1.19.2"
+gensim = "*"
 tqdm = "*"
 ipywidgets = "*"
 matplotlib = "*"
-gensim = "*"
+
 
 [requires]
 python_version = "3.7"

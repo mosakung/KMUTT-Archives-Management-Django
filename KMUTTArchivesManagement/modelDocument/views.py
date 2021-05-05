@@ -569,3 +569,24 @@ def getDocumentStatus(documentId):
         return False
     except Document.MultipleObjectsReturned:
         return False
+
+def updateStatus(documentId, status):
+    try:
+        document = Document.objects.get(pk=documentId)
+        insertData = {
+            'name': document.name,
+            'status_process_document': status
+        }
+        serializer = DocumentSerializer(
+            document, data=insertData, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return serializer.data
+        print(serializer.errors)
+        return False
+    except Document.DoesNotExist:
+        print("<EXCEPT> Document DoesNotExist")
+        return False
+    except Document.MultipleObjectsReturned:
+        print("<EXCEPT> Document MultipleObjectsReturned")
+        return False

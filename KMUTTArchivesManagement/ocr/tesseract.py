@@ -18,8 +18,6 @@ pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tessera
 ### Global variable ###
 ROOT = os.path.abspath(os.getcwd())
 PATH_REPORT = os.path.join(ROOT, 'document-report')
-logging.basicConfig(level=logging.DEBUG,
-                    format='(%(processName)-9s) %(message)s',)
 
 TEXT_MIN_WIDTH = 15      # min reduced px width of detected text contour
 TEXT_MIN_HEIGHT = 2      # min reduced px height of detected text contour
@@ -82,7 +80,7 @@ def main(fileName, name, startPage):
     path = P2i.convertPdftoJpg(name, fileName, page)
     Doc.createDirectory(PATH_REPORT)
     Doc.createDirectory(PATH_REPORT+"/"+fileName)
-    poolOCR = Pool(processes=4)
+    poolOCR = Pool(processes=8)
     listPathImage = listDirectory(path)
     for pathImage in listPathImage:
         pageNumber = re.search('page(.*).jpg', pathImage).group(1)
