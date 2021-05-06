@@ -59,15 +59,15 @@ def pipeLineTokenizer(filename, fulltext):
         corpusInPage.extend(token)
 
 
-    corpusMED = loadSpecific()
+    # corpusMED = loadSpecific()
     logging.info("deepcut FileName: " + str(filename) + " finish")
     logging.info("spellCheckAuto FileName: " + str(filename) + " start")
 
-    for value in corpusInPage:
-        word = spellCheckAuto(value)
-        word = cleanDot(word)
-        word = spellCheckSpecific(word, corpusMED)
-        resultCorpusInPage.append(word)
+    # for value in corpusInPage:
+    #     word = spellCheckAuto(value)
+    #     word = cleanDot(word)
+    #     word = spellCheckSpecific(word, corpusMED)
+    #     resultCorpusInPage.append(word)
 
     pageIndex = 0
     regexSearch = re.search(r'(?<=page-)\d+(?=.txt)', filename)
@@ -78,5 +78,5 @@ def pipeLineTokenizer(filename, fulltext):
     return {
         "pageIndex": pageIndex,
         "filename": filename,
-        "rawKeywords": resultCorpusInPage
+        "rawKeywords": corpusInPage
     }

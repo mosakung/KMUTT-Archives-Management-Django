@@ -78,16 +78,16 @@ def pipelineOCR(image, page, fileName):
 def main(fileName, name, startPage):
     page = int(startPage)
     path = P2i.convertPdftoJpg(name, fileName, page)
-    Doc.createDirectory(PATH_REPORT)
-    Doc.createDirectory(PATH_REPORT+"/"+fileName)
-    poolOCR = Pool(processes=8)
-    listPathImage = listDirectory(path)
-    for pathImage in listPathImage:
-        pageNumber = re.search('page(.*).jpg', pathImage).group(1)
-        image = cv2.imread(pathImage)
-        poolOCR.apply_async(pipelineOCR, args=(image, pageNumber, fileName, ))
-    poolOCR.close()
-    poolOCR.join()
+    # Doc.createDirectory(PATH_REPORT)
+    # Doc.createDirectory(PATH_REPORT+"/"+fileName)
+    # poolOCR = Pool(processes=8)
+    # listPathImage = listDirectory(path)
+    # for pathImage in listPathImage:
+    #     pageNumber = re.search('page(.*).jpg', pathImage).group(1)
+    #     image = cv2.imread(pathImage)
+    #     poolOCR.apply_async(pipelineOCR, args=(image, pageNumber, fileName, ))
+    # poolOCR.close()
+    # poolOCR.join()
     print('FinishOCR: ', fileName)
 
 
