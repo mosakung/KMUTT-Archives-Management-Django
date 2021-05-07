@@ -115,7 +115,11 @@ def API_Deepcut(request):
             except RuntimeError as e:
                 # Memory growth must be set before GPUs have been initialized
                 print(e)
-        tokens = deepcut(fulltext)
+                
+        tokens = []
+        for text in fulltext.split(" "):
+            rawTokens = deepcut(text)
+            tokens.extend(rawTokens)
 
         tokensClean = list(filter(
             lambda token: token != ' ' and token != '', tokens
