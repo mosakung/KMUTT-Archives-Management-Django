@@ -5,7 +5,6 @@ import numpy as np
 from multiprocessing import Pool
 import pytesseract
 from pytesseract import Output
-import logging
 import re
 
 import ocr.Pdf2img as P2i
@@ -65,13 +64,12 @@ def pipelineOCR(image, page, fileName):
     fulltext = ''
     for inx, box in enumerate(sortCnts):
         x, y, w, h = box
-        if h < TEXT_MIN_HEIGHT or w < TEXT_MIN_WIDTH:
-            pass
-        # repairOCR = imageRepair[y:y+h, x:x+w].copy()
-        cropToOCR = imageText[y:y+h, x:x+w].copy()
-        text = tesseractOcr(cropToOCR)
-        if text:
-            fulltext = fulltext + " " + text
+        if h > TEXT_MIN_HEIGHT or w > TEXT_MIN_WIDTH:
+            # repairOCR = imageRepair[y:y+h, x:x+w].copy()
+            cropToOCR = imageText[y:y+h, x:x+w].copy()
+            text = tesseractOcr(cropToOCR)
+            if text:
+                fulltext = fulltext + " " + text
     Doc.addReportText(fulltext, page, fileName)
 
 

@@ -149,8 +149,7 @@ def API_Deepcut(request):
                     'key': token,
                     'value': []
                 })
-        print(uniqueTokens)
-        print(similarTokens)
+
         return JsonResponse({
             'tokens': uniqueTokens,
             'similarTokens': similarTokens,

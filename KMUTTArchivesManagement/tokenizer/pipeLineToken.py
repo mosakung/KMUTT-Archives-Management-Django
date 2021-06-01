@@ -16,15 +16,6 @@ from tokenizer.read import *
 import tensorflow as tf
 from tokenizer.deepcut import deepcut
 
-import logging
-
-
-logging.basicConfig(level=logging.INFO,
-                    format='%(asctime)s %(name)-12s %(processName)-8s %(message)s',
-                    datefmt='%d-%m-%y %H:%M',
-                    filename='F:\Ty\project kmutt\KMUTT-Archives-Management-Django\KMUTTArchivesManagement\processLog.log',
-                    filemode='a')
-
 def pipeLineTokenizer(filename, fulltext):
     corpusInPage = []
     resultCorpusInPage = []
@@ -41,8 +32,6 @@ def pipeLineTokenizer(filename, fulltext):
         except RuntimeError as e:
             # Memory growth must be set before GPUs have been initialized
             print(e)
-
-    logging.info("deepcut FileName: " + str(filename) + " start")
     
     for line in fulltext:
         # Deep Cut process
@@ -60,8 +49,6 @@ def pipeLineTokenizer(filename, fulltext):
 
 
     corpusMED = loadSpecific()
-    logging.info("deepcut FileName: " + str(filename) + " finish")
-    logging.info("spellCheckAuto FileName: " + str(filename) + " start")
 
     for value in corpusInPage:
         word = spellCheckAuto(value)
@@ -73,8 +60,7 @@ def pipeLineTokenizer(filename, fulltext):
     regexSearch = re.search(r'(?<=page-)\d+(?=.txt)', filename)
     if regexSearch != None:
         pageIndex = regexSearch.group(0)
-    logging.info("spellCheckAuto FileName: " + str(filename) + " finish")
-    logging.info("PipeLineTokenizer FileName: " + str(filename) + " finish")
+
     return {
         "pageIndex": pageIndex,
         "filename": filename,

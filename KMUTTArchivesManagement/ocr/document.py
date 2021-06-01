@@ -1,5 +1,3 @@
-import unicodedata
-import sys
 import os
 import docx
 import re
@@ -72,8 +70,6 @@ def saveTempImg(picture):
 
 def addReportDoc(arrayPicture, arrayText, arrayCleanText, path):
     if len(arrayText) != len(arrayPicture):
-        logging.info(
-            "length between arrayText and arrayPicture is not equal!!!!!!! path: "+path)
         print('length between arrayText and arrayPicture is not equal!!!!!!!')
         return
     doc = createDoc(path)
@@ -97,8 +93,11 @@ def cleanTextRegex(fullText):
     word = b'\x0c'
     word = word.decode('utf8')
     text = fullText.replace(word, "")
-    text = REGEX.sub('', text)
-    text = re.sub(r'\s', '', text)
+    newText = ''
+    for index, current in enumerate(text):
+        if not(current == ' ' and re.match('[A-Za-z]', text[index - 1]) == None and re.match('[A-Za-z]', text[index + 1]) == None):
+            newText += current
+    newText = REGEX.sub('', newText)
     if text:
         return text + "\n"
     return False
