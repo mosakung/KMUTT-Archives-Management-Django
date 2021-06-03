@@ -152,5 +152,5 @@ def API_Deepcut(request):
 
         return JsonResponse({
             'tokens': uniqueTokens,
-            'similarTokens': similarTokens,
+            'similarTokens': [],
         })
